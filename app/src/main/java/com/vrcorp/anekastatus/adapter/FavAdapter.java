@@ -23,13 +23,13 @@ import com.bumptech.glide.request.transition.Transition;
 import com.vrcorp.anekastatus.DetailActivity;
 import com.vrcorp.anekastatus.R;
 import com.vrcorp.anekastatus.db.DBHelper;
-import com.vrcorp.anekastatus.model.MotivasiModel;
-import com.vrcorp.anekastatus.model.RemajaModel;
+import com.vrcorp.anekastatus.model.FavModel;
+import com.vrcorp.anekastatus.model.IslamiModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MotivasiAdapter extends RecyclerView.Adapter<MotivasiAdapter.MyViewHolder> {
+public class FavAdapter extends RecyclerView.Adapter<FavAdapter.MyViewHolder> {
     private ArrayList<String> islamijudulList = new ArrayList<>();
     private ArrayList<String> islamikategoriList = new ArrayList<>();
     private ArrayList<String> islamiphotoList = new ArrayList<>();
@@ -43,14 +43,14 @@ public class MotivasiAdapter extends RecyclerView.Adapter<MotivasiAdapter.MyView
     DBHelper helper;
     int success=0, favoritStatus=0, total;
     boolean isLoadingAdded;
-    public MotivasiAdapter(Context context, ArrayList<String> islamijudulList,
-                           ArrayList<String> islamikategoriList,
-                           ArrayList<String> islamiphotoList,
-                           ArrayList<String> islamiurlList,
-                           ArrayList<String> islamipenerbitList,
-                           ArrayList<String> islamiwaktuList,
-                           ArrayList<String> islamiDes,
-                           ArrayList<Integer> islamifavList) {
+    public FavAdapter(Context context, ArrayList<String> islamijudulList,
+                      ArrayList<String> islamikategoriList,
+                      ArrayList<String> islamiphotoList,
+                      ArrayList<String> islamiurlList,
+                      ArrayList<String> islamipenerbitList,
+                      ArrayList<String> islamiwaktuList,
+                      ArrayList<String> islamiDes,
+                      ArrayList<Integer> islamifavList) {
         this.context = context;
         //this.baperModelList = baperModelList;
         this.islamijudulList = islamijudulList;
@@ -111,8 +111,8 @@ public class MotivasiAdapter extends RecyclerView.Adapter<MotivasiAdapter.MyView
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("url",islamiurlList.get(position));
                 intent.putExtra("gambar",islamiphotoList.get(position));
+                intent.putExtra("url",islamiurlList.get(position));
                 context.startActivity(intent);
             }
         });
@@ -180,7 +180,7 @@ public class MotivasiAdapter extends RecyclerView.Adapter<MotivasiAdapter.MyView
     public int getItemCount() {
         return islamijudulList.size();
     }
-    public void swap(List<MotivasiModel> datas){
+    public void swap(List<FavModel> datas){
         //baperModelList.clear();
         //baperModelList.addAll(datas);
         notifyDataSetChanged();

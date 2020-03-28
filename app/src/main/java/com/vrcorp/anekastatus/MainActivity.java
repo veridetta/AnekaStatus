@@ -42,12 +42,12 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
         //actionBar.hide();
         //tabLayout = findViewById(R.id.tabLayout);
         adapter = new ArtikelAdapter(getSupportFragmentManager());
+        adapter.addFragment(new RemajaFragment(), "Remaja");
         adapter.addFragment(new BaperFragment(), "Baper");
-        adapter.addFragment(new IslamiFragment(), "Islami");
         adapter.addFragment(new LucuFragment(), "Lucu");
         adapter.addFragment(new MotivasiFragment(), "Motivasi");
-        adapter.addFragment(new RemajaFragment(), "Remaja");
         adapter.addFragment(new RomantisFragment(), "Romantis");
+        adapter.addFragment(new IslamiFragment(), "Islami");
         //MaterialViewPagerHelper.registerScrollView(this, scroll);
         viewpager.setAdapter(adapter);
         viewPager.getPagerTitleStrip().setViewPager(viewPager.getViewPager());
@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
             startActivity(intent);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

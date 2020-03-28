@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,8 +23,11 @@ import com.bumptech.glide.request.transition.Transition;
 import com.vrcorp.anekastatus.DetailActivity;
 import com.vrcorp.anekastatus.R;
 import com.vrcorp.anekastatus.db.DBHelper;
+import com.vrcorp.anekastatus.model.IslamiModel;
+import com.vrcorp.anekastatus.model.RemajaModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHolder> {
     private ArrayList<String> islamijudulList = new ArrayList<>();
@@ -32,56 +36,67 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
     private ArrayList<String> islamiurlList = new ArrayList<>();
     private ArrayList<String> islamipenerbitList = new ArrayList<>();
     private ArrayList<String> islamiwaktuList = new ArrayList<>();
+    private ArrayList<String> islamiDes = new ArrayList<>();
     private ArrayList<Integer> islamifavList = new ArrayList<>();
+
     private Context context;
     DBHelper helper;
-    int success=0, favoritStatus=0;
-
-
+    int success=0, favoritStatus=0, total;
+    boolean isLoadingAdded;
     public IslamiAdapter(Context context, ArrayList<String> islamijudulList,
                          ArrayList<String> islamikategoriList,
                          ArrayList<String> islamiphotoList,
                          ArrayList<String> islamiurlList,
                          ArrayList<String> islamipenerbitList,
                          ArrayList<String> islamiwaktuList,
+                         ArrayList<String> islamiDes,
                          ArrayList<Integer> islamifavList) {
         this.context = context;
+        //this.baperModelList = baperModelList;
         this.islamijudulList = islamijudulList;
         this.islamikategoriList = islamikategoriList;
         this.islamiphotoList = islamiphotoList;
         this.islamiurlList = islamiurlList;
         this.islamipenerbitList = islamipenerbitList;
         this.islamiwaktuList = islamiwaktuList;
+        this.islamiDes= islamiDes;
         this.islamifavList=islamifavList;
     }
 
+
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tJudul, tPenerbit, tWaktu;
+        TextView tJudul, tWaktu, tDes;
         int tFav;
         ImageView gArtikel, gFav;
         CardView cArtikel;
+        LinearLayout btnShare, btnLike;
         public MyViewHolder(View view) {
             super(view);
             tJudul = view.findViewById(R.id.art_judul);
-            tPenerbit= view.findViewById(R.id.art_penerbit);
+            tDes= view.findViewById(R.id.art_des);
             tWaktu= view.findViewById(R.id.art_tanggal);
-            gArtikel= view.findViewById(R.id.bg_artikel);
+            gArtikel= view.findViewById(R.id.art_photo);
             cArtikel = view.findViewById(R.id.card_artikel);
-            gFav = view.findViewById(R.id.art_fav);
+            gFav = view.findViewById(R.id.img_like);
+            btnLike = view.findViewById(R.id.btn_like);
+            btnShare= view.findViewById(R.id.btn_share);
         }
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.artikel_list, parent, false);
+                .inflate(R.layout.status_list, parent, false);
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
+        //final BaperModel Baper = baperModelList.get(position);
+        this.total = total;
         holder.tJudul.setText(islamijudulList.get(position));
-        holder.tPenerbit.setText(islamipenerbitList.get(position));
+        holder.tDes.setText(islamiDes.get(position));
         holder.tWaktu.setText(islamiwaktuList.get(position));
         Glide.with(holder.gArtikel.getContext())
                 .load(Uri.parse(islamiphotoList.get(position)))
@@ -97,6 +112,7 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtra("url",islamiurlList.get(position));
+                intent.putExtra("gambar",islamiphotoList.get(position));
                 context.startActivity(intent);
             }
         });
@@ -127,6 +143,7 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
                                     holder.gFav.setImageDrawable(resource);
                                 }
                             });
+                    helper.deletDB(islamiurlList.get(position));
                     favoritStatus=0;
                 }else{
                     Glide.with(holder.gFav)
@@ -139,11 +156,22 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
                                 }
                             });
                     helper.insertIntoDB(1,islamijudulList.get(position),
-                            islamiphotoList.get(position),
-                            islamiurlList.get(position),"","","1",
+                            islamiphotoList.get(position),islamiurlList.get(position),
+                            islamiDes.get(position),"","1",
                             islamiwaktuList.get(position),islamipenerbitList.get(position));
                     favoritStatus=1;
                 }
+            }
+        });
+        holder.btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent shareIntent;
+                shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                shareIntent.putExtra(Intent.EXTRA_TEXT,islamiDes.get(position)+" Download aplikasi Aneka Status secara gratis " + "https://play.google.com/store/apps/details?id=" +context.getPackageName());
+                shareIntent.setType("text/plain");
+                context.startActivity(Intent.createChooser(shareIntent,"Share with"));
             }
         });
     }
@@ -152,5 +180,10 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
     public int getItemCount() {
         return islamijudulList.size();
     }
-}
+    public void swap(List<IslamiModel> datas){
+        //baperModelList.clear();
+        //baperModelList.addAll(datas);
+        notifyDataSetChanged();
+    }
 
+}

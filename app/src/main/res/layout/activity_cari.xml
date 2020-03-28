@@ -78,7 +78,7 @@
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:text="Cari Artikel"
+                                        android:text="Cari"
                                         android:textStyle="bold"
                                         android:textSize="@dimen/_20sdp"
                                         android:layout_gravity="center"

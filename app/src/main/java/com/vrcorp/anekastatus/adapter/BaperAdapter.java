@@ -112,6 +112,7 @@ public class BaperAdapter extends RecyclerView.Adapter<BaperAdapter.MyViewHolder
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtra("url",islamiurlList.get(position));
+                intent.putExtra("gambar",islamiphotoList.get(position));
                 context.startActivity(intent);
             }
         });

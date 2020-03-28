@@ -16,7 +16,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <LinearLayout
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:id="@+id/des_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -35,18 +35,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="10"
                         android:padding="@dimen/_10sdp">
                         <LinearLayout
-                            android:layout_width="@dimen/_2sdp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="9"
                             android:orientation="vertical">
                             <TextView
                                 android:id="@+id/des_art_judul"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Judul Artikel"
+                                android:text=""
                                 android:maxLength="80"
                                 android:textSize="@dimen/_22sdp"
                                 android:textColor="@color/grey_900"
@@ -61,7 +59,7 @@
                                     android:id="@+id/des_penerbit"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="MyBlog"
+                                    android:text=""
                                     android:textStyle="bold"
                                     android:textColor="@color/grey_800"
                                     android:textSize="@dimen/_13sdp"/>
@@ -75,7 +73,7 @@
                                     android:id="@+id/des_waktu"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="MyBlog"
+                                    android:text=""
                                     android:textStyle="bold"
                                     android:textColor="@color/grey_800"
                                     android:textSize="@dimen/_13sdp"/>
@@ -95,11 +93,178 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 tools:ignore="WebViewLayout" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:paddingTop="@dimen/_10sdp">
+                                    <ImageView
+                                        android:layout_width="@dimen/_20sdp"
+                                        android:layout_height="@dimen/_20sdp"
+                                        android:background="@color/orange_400"/>
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:paddingLeft="@dimen/_10sdp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="@dimen/_15sdp"
+                                            android:textColor="@color/orange_300"
+                                            android:text="Comments"/>
+                                    </LinearLayout>
+                                </LinearLayout>
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/_3sdp"
+                                    android:layout_marginTop="@dimen/_4sdp"
+                                    android:background="@color/orange_400"/>
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/rc_comment"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    />
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingTop="@dimen/_6sdp"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textStyle="bold"
+                                        android:textSize="@dimen/_15sdp"
+                                        android:textColor="@color/blue_400"
+                                        android:text="Leave a comment"/>
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="1dp"
+                                        android:layout_marginTop="@dimen/_2sdp"
+                                        android:layout_marginBottom="@dimen/_4sdp"
+                                        android:background="@color/blue_300"/>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:paddingTop="@dimen/_6sdp">
+                                        <LinearLayout
+                                            android:id="@+id/layout_comment_isi"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="vertical"
+                                            android:padding="@dimen/_8sdp">
+                                            <com.google.android.material.textfield.TextInputLayout
+                                                android:id="@+id/layout_input_comment_isi"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                                                <com.google.android.material.textfield.TextInputEditText
+                                                    android:id="@+id/input_comment_isi"
+                                                    android:layout_width="match_parent"
+                                                    android:minHeight="@dimen/_70sdp"
+                                                    android:layout_height="wrap_content"
+                                                    android:hint="Isi Komentar"
+                                                    android:inputType="textMultiLine"
+                                                    android:textColor="@color/grey_900"
+                                                    android:lines="5"
+                                                    android:maxLines="10"
+                                                    android:minLines="5" />
+                                            </com.google.android.material.textfield.TextInputLayout>
+                                        </LinearLayout>
+                                        <LinearLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="horizontal"
+                                            android:padding="@dimen/_4sdp"
+                                            android:weightSum="10">
+                                            <LinearLayout
+                                                android:layout_width="@dimen/_1sdp"
+                                                android:layout_height="wrap_content"
+                                                android:layout_weight="5">
+                                                <LinearLayout
+                                                    android:id="@+id/layout_comment_name"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:orientation="vertical"
+                                                    android:padding="@dimen/_4sdp">
+                                                    <com.google.android.material.textfield.TextInputLayout
+                                                        android:id="@+id/layout_input_comment_name"
+                                                        android:layout_width="match_parent"
+                                                        android:layout_height="wrap_content"
+                                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                                                        <com.google.android.material.textfield.TextInputEditText
+                                                            android:id="@+id/input_comment_name"
+                                                            android:layout_width="match_parent"
+                                                            android:layout_height="wrap_content"
+                                                            android:textColor="@color/grey_900"
+                                                            android:hint="Nama"
+                                                            android:inputType="textPersonName" />
+                                                    </com.google.android.material.textfield.TextInputLayout>
+                                                </LinearLayout>
+                                            </LinearLayout>
+                                            <LinearLayout
+                                                android:layout_width="@dimen/_1sdp"
+                                                android:layout_height="wrap_content"
+                                                android:layout_weight="5">
+                                                <LinearLayout
+                                                    android:id="@+id/layout_comment_email"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="wrap_content"
+                                                    android:orientation="vertical"
+                                                    android:padding="@dimen/_4sdp">
+                                                    <com.google.android.material.textfield.TextInputLayout
+                                                        android:id="@+id/layout_input_comment_email"
+                                                        android:layout_width="match_parent"
+                                                        android:layout_height="wrap_content"
+                                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                                                        <com.google.android.material.textfield.TextInputEditText
+                                                            android:id="@+id/input_comment_email"
+                                                            android:layout_width="match_parent"
+                                                            android:layout_height="wrap_content"
+                                                            android:hint="Email"
+                                                            android:textColor="@color/grey_900"
+                                                            android:inputType="textEmailAddress" />
+                                                    </com.google.android.material.textfield.TextInputLayout>
+                                                </LinearLayout>
+                                            </LinearLayout>
+                                        </LinearLayout>
+                                        <LinearLayout
+                                            android:id="@+id/btn_comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="@dimen/_4sdp"
+                                            android:layout_marginBottom="@dimen/_4sdp"
+                                            android:layout_marginLeft="@dimen/_8sdp"
+                                            android:layout_marginRight="@dimen/_8sdp"
+                                            android:background="@color/blue_400"
+                                            android:layout_gravity="center"
+                                            android:gravity="center"
+                                            android:padding="@dimen/_6sdp">
+                                            <TextView
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:textStyle="bold"
+                                                android:layout_gravity="center"
+                                                android:gravity="center"
+                                                android:textSize="@dimen/_15sdp"
+                                                android:textColor="@color/white"
+                                                android:text="Kirim Komentar"/>
+                                        </LinearLayout>
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
                 <io.supercharge.shimmerlayout.ShimmerLayout
                     android:id="@+id/sh_des"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <include layout="@layout/shimmer_des"/>

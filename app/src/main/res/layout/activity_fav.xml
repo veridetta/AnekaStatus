@@ -88,17 +88,15 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
                                 app:shimmer_animation_duration="1200">
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical">
-                                    <include layout="@layout/shimmer_artikel_list" />
+                                    <include layout="@layout/shimmer_artikel_list"/>
                                     <include layout="@layout/shimmer_artikel_list" />
                                     <include layout="@layout/shimmer_artikel_list" />
                                     <include layout="@layout/shimmer_artikel_list" />
                                 </LinearLayout>
-
                             </io.supercharge.shimmerlayout.ShimmerLayout>
                             <androidx.recyclerview.widget.RecyclerView
                                 android:layout_width="match_parent"

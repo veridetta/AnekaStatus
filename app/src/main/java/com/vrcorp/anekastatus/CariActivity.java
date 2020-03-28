@@ -17,7 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vrcorp.anekastatus.adapter.BaperAdapter;
+import com.vrcorp.anekastatus.adapter.FavAdapter;
 import com.vrcorp.anekastatus.adapter.IslamiAdapter;
+import com.vrcorp.anekastatus.model.BaperModel;
+import com.vrcorp.anekastatus.model.FavModel;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -26,6 +29,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
@@ -34,15 +38,18 @@ public class CariActivity extends AppCompatActivity {
     private ActionBar toolbar;
     TextView jdul;
     LinearLayout no_result;
+    FavAdapter mDataAdapter;
     SearchView cari;
-    String Nama, gambara, urlPosting, waktu, penerbit, cariVal;
-    private ArrayList<String> judulList= new ArrayList<>();
-    private ArrayList<String> gambarList= new ArrayList<String>();
-    private ArrayList<String> penerbitList = new ArrayList<>();
-    private ArrayList<String> waktuList = new ArrayList<>();
-    private ArrayList<String> urlList = new ArrayList<>();
-    private ArrayList<String> kategoriList = new ArrayList<>();
-    private ArrayList<Integer> favList = new ArrayList<Integer>();
+    private List<FavModel> baperDataList;
+    String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, cariVal;
+    private ArrayList<String> islamijudulList= new ArrayList<>();
+    private ArrayList<String> islamigambarList= new ArrayList<String>();
+    private ArrayList<String> islamipenerbitList = new ArrayList<>();
+    private ArrayList<String> islamiwaktuList = new ArrayList<>();
+    private ArrayList<String> islamiurlList = new ArrayList<>();
+    private ArrayList<String> islamikategoriList = new ArrayList<>();
+    private ArrayList<String> islamiDesList = new ArrayList<>();
+    private ArrayList<Integer> islamifavList = new ArrayList<Integer>();
     RecyclerView rc_cari;
     int data=0;
     ShimmerLayout sh_cari;
@@ -71,20 +78,20 @@ public class CariActivity extends AppCompatActivity {
         cari.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                 cariVal = cari.getQuery().toString();
+                cariVal = cari.getQuery().toString();
                 if(cariVal.length()<3){
                     Toast.makeText(CariActivity.this,"Minimal kata minimal 3 huruf",Toast.LENGTH_LONG).show();
                 }else if(cariVal.length()>10){
                     Toast.makeText(CariActivity.this,"Maksimal 10 huruf",Toast.LENGTH_LONG).show();
                 }else{
                     no_result.setVisibility(View.GONE);
-                    judulList.clear();
-                    gambarList.clear();
-                    penerbitList.clear();
-                    waktuList.clear();
-                    urlList.clear();
-                    kategoriList.clear();
-                    favList.clear();
+                    islamijudulList.clear();
+                    islamigambarList.clear();
+                    islamipenerbitList.clear();
+                    islamiwaktuList.clear();
+                    islamiurlList.clear();
+                    islamikategoriList.clear();
+                    islamifavList.clear();
                     new CardGet().execute();
                     sh_cari.setVisibility(View.VISIBLE);
                     sh_cari.startShimmerAnimation();
@@ -103,7 +110,12 @@ public class CariActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             // NO CHANGES TO UI TO BE DONE HERE
-            String url = "https://mydemoblog19.blogspot.com/search?q="+cariVal;
+            String url = "https://www.status.co.id/aneka/search/"+cariVal;
+            baperDataList= new ArrayList<FavModel>();
+            mDataAdapter = new FavAdapter( CariActivity.this, islamijudulList,
+                    islamikategoriList,
+                    islamigambarList, islamiurlList,islamipenerbitList
+                    ,islamiwaktuList,islamiDesList, islamifavList);
             Document mBlogPagination = null;
             System.out.println(url);
             try {
@@ -111,41 +123,39 @@ public class CariActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //mBlogPagination.outputSettings().prettyPrint(false);
-            //Log.d(TAG, "doInBackground: "+mBlogPagination);
-            //System.out.println(mBlogPagination);
-            // Using Elements to get the Meta data
-            // -------------- RECENTT ---------------
-            //----------------
-            Elements mElementDataSize = mBlogPagination.select("div[class=blog-posts hfeed container] article[class=post-outer-container]");
+            Elements BaperElementDataSize = mBlogPagination.select("section[class=new-content] article.box-post");
             // Locate the content attribute
-            int mElementSize = mElementDataSize.size();
-            int max = 0;
-            if(mElementSize>10){
-                max=10;
-            }else{
-                max=mElementSize;
-            }
+            int BaperElementSize = BaperElementDataSize.size();
+
             //System.out.println("jumlah data"+mElementSize);
-            for (int i = 0; i < max; i++) {
-                //Judul
-                Elements ElemenJudul = mElementDataSize.select("h3[class=post-title entry-title]").eq(i);
+            for (int i = 0; i < BaperElementSize; i++) {
+                //Judul old-----
+                //Elements ElemenJudul = BaperElementDataSize.select("div[class=entry-body media] h2[class=entry-title ktz-titlemini]").eq(i);
+                //Nama= ElemenJudul.text();
+                //urlPosting = ElemenJudul.select("a").eq(0).attr("href");
+                Elements ElemenJudul = BaperElementDataSize.select("h2[class=entry-title]").eq(i);
                 Nama= ElemenJudul.text();
-                //gambar
-                Elements elGambar = mElementDataSize.select("div[class=container post-body entry-content] div[class=snippet-thumbnail]").eq(i);
-                gambara = elGambar.select("img").eq(0).attr("src");
                 urlPosting = ElemenJudul.select("a").eq(0).attr("href");
-                Elements elWaktu = mElementDataSize.select("div[class=post-header]").eq(i);
-                waktu = elWaktu.text().trim();
-                penerbit = "MyBlog";
-                //STATUS
-                judulList.add(Nama);
-                urlList.add(urlPosting);
-                penerbitList.add(penerbit);
-                gambarList.add(gambara);
-                waktuList.add(waktu);
-                kategoriList.add("");
-                favList.add(1);
+                //gambar old -----
+                //Elements elGambar = BaperElementDataSize.select("div[class=entry-body media] a[class=ktz_thumbnail pull-left]").eq(i);
+                //gambara = elGambar.select("img").eq(0).attr("src");
+                Elements elGambar = BaperElementDataSize.select("div[class=entry-body media] div[class=clearfix] div[class=ktz-featuredimg] a[class=ktz_thumbnail]").eq(i);
+                gambara = elGambar.select("img").eq(0).attr("src");
+
+                Elements Edes = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post]").eq(i);
+                des = Edes.text().trim();
+                Elements elWaktu = BaperElementDataSize.select("div[class=meta-post]").eq(i);
+                waktu = elWaktu.select("div").eq(0).select("span[class=entry-date updated] a").text().trim();
+                penerbit = elWaktu.select("div").eq(0).select("span[class=entry-author vcard] a").text().trim();
+                islamijudulList.add(Nama);
+                islamiurlList.add(urlPosting);
+                islamipenerbitList.add(penerbit);
+                islamigambarList.add(gambara);
+                islamiwaktuList.add(waktu);
+                islamikategoriList.add("");
+                islamiDesList.add(des);
+                islamifavList.add(1);
+                mDataAdapter.notifyDataSetChanged();
             }
             //---------------------------
             //--------------------------
@@ -155,18 +165,9 @@ public class CariActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            //This is where we update the UI with the acquired data
-            // Set description into TextView
-            //Log.d(TAG, "onPostExecute: "+result);
-            //--------------RECENT -
-            //--------------------
-            System.out.println(gambarList);
-            IslamiAdapter mDataAdapter = new IslamiAdapter( CariActivity.this, judulList, kategoriList,
-                    gambarList, urlList,penerbitList,waktuList,favList);
             RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),1, LinearLayoutManager.VERTICAL, false);
             //attachToRecyclerView
-
-            if(judulList.size()>0){
+            if(islamijudulList.size()>0){
                 //Use this now
                 rc_cari.setLayoutManager(mLayoutManager);
                 rc_cari.setAdapter(mDataAdapter);
@@ -181,6 +182,7 @@ public class CariActivity extends AppCompatActivity {
                 rc_cari.setVisibility(View.GONE);
                 no_result.setVisibility(View.VISIBLE);
             }
+            System.out.println("Mentok"+islamijudulList);
             //--------------------------
             //-------------------------
             //dialog.dismiss();

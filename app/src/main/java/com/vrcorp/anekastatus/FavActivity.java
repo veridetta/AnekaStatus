@@ -29,6 +29,7 @@ public class FavActivity extends AppCompatActivity {
     private ArrayList<String> urlList = new ArrayList<>();
     private ArrayList<String> kategoriList = new ArrayList<>();
     private ArrayList<Integer> favList = new ArrayList<Integer>();
+    private ArrayList<String> desList = new ArrayList<String>();
     RecyclerView rc_fav;
     int totalData=0, mentok=0;
     DBHelper helper;
@@ -67,6 +68,7 @@ public class FavActivity extends AppCompatActivity {
                 urlList.add(dbList.get(i).getUrl());
                 kategoriList.add(dbList.get(i).getKategori());
                 favList.add(Integer.parseInt(dbList.get(i).getFavorit()));
+                desList.add(dbList.get(i).getDes());
                 System.out.println("Masuk while "+judulList);
                 if(totalData - i == 1){
                     mentok=1;
@@ -74,7 +76,7 @@ public class FavActivity extends AppCompatActivity {
             }
             if(mentok>0){
                 IslamiAdapter mDataAdapter = new IslamiAdapter( FavActivity.this, judulList, kategoriList,
-                        gambarList, urlList,penerbitList,waktuList,favList);
+                        gambarList, urlList,penerbitList,waktuList,desList,favList);
                 RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),1, LinearLayoutManager.VERTICAL, false);
                 rc_fav.setLayoutManager(mLayoutManager);
                 rc_fav.setAdapter(mDataAdapter);

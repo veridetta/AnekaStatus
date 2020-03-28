@@ -18,12 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
 import com.vrcorp.anekastatus.R;
 import com.vrcorp.anekastatus.adapter.BaperAdapter;
-import com.vrcorp.anekastatus.adapter.IslamiAdapter;
 import com.vrcorp.anekastatus.model.BaperModel;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -32,8 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
-
-import static com.google.android.gms.internal.zzahn.runOnUiThread;
 
 public class BaperFragment extends Fragment {
     ShimmerLayout sh_art;
@@ -45,7 +41,7 @@ public class BaperFragment extends Fragment {
     String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage;
     private List<BaperModel> baperDataList;
     BaperAdapter mDataAdapter;
-    String url="https://www.status.co.id/aneka/category/remaja/";
+    String url="https://www.status.co.id/aneka/category/baper/";
     private ArrayList<String> islamijudulList= new ArrayList<>();
     private ArrayList<String> islamigambarList= new ArrayList<String>();
     private ArrayList<String> islamipenerbitList = new ArrayList<>();
@@ -84,7 +80,7 @@ public class BaperFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_rekomendasi, container, false);
+        view = inflater.inflate(R.layout.fragment_baper, container, false);
         Baper_art = view.findViewById(R.id.rc_art);
         sh_art = view.findViewById(R.id.sh_art);
         kosong = view.findViewById(R.id.kosong);
@@ -152,20 +148,27 @@ public class BaperFragment extends Fragment {
 
             //System.out.println("jumlah data"+mElementSize);
             for (int i = 0; i < BaperElementSize; i++) {
-                //Judul
-                Elements ElemenJudul = BaperElementDataSize.select("div[class=entry-body media] h2[class=entry-title ktz-titlemini]").eq(i);
+                //Judul old-----
+                //Elements ElemenJudul = BaperElementDataSize.select("div[class=entry-body media] h2[class=entry-title ktz-titlemini]").eq(i);
+                //Nama= ElemenJudul.text();
+                //urlPosting = ElemenJudul.select("a").eq(0).attr("href");
+                Elements ElemenJudul = BaperElementDataSize.select("h2[class=entry-title]").eq(i);
                 Nama= ElemenJudul.text();
-                //gambar
-                Elements elGambar = BaperElementDataSize.select("div[class=entry-body media] a[class=ktz_thumbnail pull-left]").eq(i);
-                gambara = elGambar.select("img").eq(0).attr("src");
                 urlPosting = ElemenJudul.select("a").eq(0).attr("href");
-                Elements Edes = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post] div[class=media-body ktz-post]").eq(i);
+                //gambar old -----
+                //Elements elGambar = BaperElementDataSize.select("div[class=entry-body media] a[class=ktz_thumbnail pull-left]").eq(i);
+                //gambara = elGambar.select("img").eq(0).attr("src");
+                Elements elGambar = BaperElementDataSize.select("div[class=entry-body media] div[class=clearfix] div[class=ktz-featuredimg] a[class=ktz_thumbnail]").eq(i);
+                gambara = elGambar.select("img").eq(0).attr("src");
+
+                Elements Edes = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post]").eq(i);
                 des = Edes.text().trim();
-                Elements elWaktu = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post]").eq(i);
-                waktu = elWaktu.select("div").eq(0).select("span[class=entry-date updated]").text().trim();
-                penerbit = elWaktu.select("div").eq(0).select("span[class=entry-author vcard]").text().trim();
+                Elements elWaktu = BaperElementDataSize.select("div[class=meta-post]").eq(i);
+                waktu = elWaktu.select("div").eq(0).select("span[class=entry-date updated] a").text().trim();
+                penerbit = elWaktu.select("div").eq(0).select("span[class=entry-author vcard] a").text().trim();
                 Elements eNext = mBlogPagination.select("nav[id=nav-index] ul[class=pagination]").eq(i);
                 eList = eNext.select("li");
+                next="";
                 for(int n=0;n<eList.size();n++){
                     if(eList.size()-n==1){
                         NextPage=eList.eq(n).select("a").eq(0).attr("href");
