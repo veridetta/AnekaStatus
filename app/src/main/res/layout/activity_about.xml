@@ -22,19 +22,19 @@
                 android:layout_width="@dimen/_80sdp"
                 android:layout_height="@dimen/_80sdp"
                 android:layout_gravity="center"
-                android:background="@drawable/blog"/>
+                android:background="@drawable/iconlogo"/>
         </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="MyBlog Apps"
+            android:text="Aneka Status Apps"
             android:textSize="@dimen/_20sdp"
             android:textStyle="bold"
             android:textColor="@color/blue_400"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Created By inc.vr.corp"
+            android:text="Created By inc.vr.corp @2020"
             android:textSize="@dimen/_16sdp"
             android:textColor="@color/blue_400"/>
         <TextView
@@ -43,12 +43,7 @@
             android:text="inc.vr.corp@gmail.com"
             android:textSize="@dimen/_16sdp"
             android:textColor="@color/blue_400"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="08817769047"
-            android:textSize="@dimen/_16sdp"
-            android:textColor="@color/blue_400"/>
+
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

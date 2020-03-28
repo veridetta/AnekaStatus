@@ -14,6 +14,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.vrcorp.anekastatus.adapter.ArtikelAdapter;
 import com.vrcorp.anekastatus.layout.IslamiFragment;
 import com.vrcorp.anekastatus.layout.RemajaFragment;
@@ -22,17 +27,25 @@ import com.vrcorp.anekastatus.layout.LucuFragment;
 import com.vrcorp.anekastatus.layout.MotivasiFragment;
 import com.vrcorp.anekastatus.layout.RomantisFragment;
 
+
 public class MainActivity extends AppCompatActivity {private ArtikelAdapter adapter;
     //private TabLayout tabLayout;
     private MaterialViewPager viewPager;
     Toolbar toolbar;
     ActionBar actionBar;
     NestedScrollView scroll;
+    private AdView adView;
+    AdRequest adRequest;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewPager =  findViewById(R.id.viewPager);
+
+        adView = (AdView) findViewById(R.id.adView);
+        adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
         //scroll = findViewById(R.id.scRoll);
         ViewPager viewpager = viewPager.getViewPager();
         toolbar = viewPager.getToolbar();
@@ -121,6 +134,29 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onPause() {
+        if (adView != null) {
+            adView.pause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
     }
 
 }
