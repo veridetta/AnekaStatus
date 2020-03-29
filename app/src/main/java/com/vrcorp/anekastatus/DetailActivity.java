@@ -3,10 +3,13 @@ package com.vrcorp.anekastatus;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -20,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,12 +61,14 @@ public class DetailActivity extends AppCompatActivity {
     LinearLayout desKategori, desKonten, btn_comment;
     CardView cFav, cShare, cBack;
     ImageView bgDes, desFav;
-    String paragraph="", comment_id;
+    String paragraph="", comment_id, shareenya ="";
     TextView des_judul, des_penerbit, des_waktu;
     EditText input_com_isi,input_com_nama, input_com_email;
     WebView des_isi;
+    SharedPreferences.Editor sharedPreferences;
     ShimmerLayout sh_des;
     DBHelper helper;
+    Boolean stataus;
     RecyclerView rc_comment;
     ProgressDialog pDialog;
     String urlnya, Nama, gambara, urlPosting, waktu, penerbit, isi, comment_name, comment_isi="", comment_waktu, comment_gambar;
@@ -88,14 +94,23 @@ public class DetailActivity extends AppCompatActivity {
         sh_des = findViewById(R.id.sh_des);
         desFav = findViewById(R.id.img_des_fav);
         rc_comment = findViewById(R.id.rc_comment);
-        helper = new DBHelper(this);
-        Intent intent = getIntent();
-        urlnya = intent.getStringExtra("url");
-        gambara = intent.getStringExtra("gambar");
-        success = helper.cekFav(urlnya);
         input_com_email =findViewById(R.id.input_comment_email);
         input_com_isi=findViewById(R.id.input_comment_isi);
         input_com_nama =findViewById(R.id.input_comment_name);
+        helper = new DBHelper(this);
+        Intent intent = getIntent();
+        SharedPreferences sharedPreferences1 = getSharedPreferences("anekaStatus",MODE_PRIVATE);
+        stataus=sharedPreferences1.getBoolean("status",false);
+
+        if (stataus){
+            input_com_email.setEnabled(false);
+            input_com_nama.setEnabled(false);
+            input_com_nama.setText(sharedPreferences1.getString("nama",null));
+            input_com_email.setText(sharedPreferences1.getString("email",null));
+        }
+        urlnya = intent.getStringExtra("url");
+        gambara = intent.getStringExtra("gambar");
+        success = helper.cekFav(urlnya);
         btn_comment = findViewById(R.id.btn_comment);
         btn_comment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +178,7 @@ public class DetailActivity extends AppCompatActivity {
                 Intent shareIntent;
                 shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                shareIntent.putExtra(Intent.EXTRA_TEXT,"Baca artikel "+Nama+", Download aplikasi Resep Memasak secara gratis " + "https://play.google.com/store/apps/details?id=" +getPackageName());
+                shareIntent.putExtra(Intent.EXTRA_TEXT,  stripHtml(paragraph)+ ", Download aplikasi Aneka Status secara gratis " + "https://play.google.com/store/apps/details?id=" + getPackageName());
                 shareIntent.setType("text/plain");
                 startActivity(Intent.createChooser(shareIntent,"Share with"));
             }
@@ -214,6 +229,11 @@ public class DetailActivity extends AppCompatActivity {
                 urlPosting = ElemenJudul.select("a").eq(0).attr("href");
 
                 Elements elIsi = ElemenJudul.select("div[class=entry-content ktz-wrap-content-single clearfix ktz-post]");
+                elIsi.select("img").remove();
+                elIsi.select("ul[class=nav nav-pills ktz-pills]").remove();
+                shareenya=elIsi.text().trim();
+                paragraph = elIsi.html();
+                /*
                 Elements listIsi = elIsi.select("p");
                 for(int is=0;is<listIsi.size();is++){
                     if (is>0){
@@ -222,6 +242,8 @@ public class DetailActivity extends AppCompatActivity {
 
                     }
                 }
+                 */
+                System.out.println("paragraph "+paragraph);
                 isi = elIsi.text().trim();
 
                 Elements eMeta = ElemenJudul.select("div[class=metasingle-aftertitle] div[class=ktz-inner-metasingle]");
@@ -309,6 +331,11 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 Log.e("komentar", "Login Response string: " + response.toString());
+                sharedPreferences = getSharedPreferences("anekaStatus",MODE_PRIVATE).edit();
+                sharedPreferences.putString("nama",input_com_nama.getText().toString());
+                sharedPreferences.putString("email",input_com_email.getText().toString());
+                sharedPreferences.putBoolean("status", true);
+                sharedPreferences.apply();
                 pDialog.dismiss();
                 finish();
                 startActivity(getIntent());
@@ -357,5 +384,12 @@ public class DetailActivity extends AppCompatActivity {
     public void onDestroy() {
         helper.close();
         super.onDestroy();
+    }
+    public String stripHtml(String html){
+        if(Build.VERSION.SDK_INT>=android.os.Build.VERSION_CODES.N){
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString();
+        }else{
+            return  Html.fromHtml(html).toString();
+        }
     }
 }

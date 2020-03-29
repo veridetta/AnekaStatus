@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -62,11 +65,18 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
         this.islamiDes= islamiDes;
         this.islamifavList=islamifavList;
     }
-
+    public String stripHtml(String html){
+        if(Build.VERSION.SDK_INT>=android.os.Build.VERSION_CODES.N){
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString();
+        }else{
+            return  Html.fromHtml(html).toString();
+        }
+    }
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tJudul, tWaktu, tDes;
+        TextView tJudul, tWaktu;
+        WebView tDes;
         int tFav;
         ImageView gArtikel, gFav;
         CardView cArtikel;
@@ -96,7 +106,7 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
         //final BaperModel Baper = baperModelList.get(position);
         this.total = total;
         holder.tJudul.setText(islamijudulList.get(position));
-        holder.tDes.setText(islamiDes.get(position));
+        holder.tDes.loadDataWithBaseURL(null, islamiDes.get(position), "text/html", "utf-8", null);
         holder.tWaktu.setText(islamiwaktuList.get(position));
         Glide.with(holder.gArtikel.getContext())
                 .load(Uri.parse(islamiphotoList.get(position)))
@@ -169,7 +179,7 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
                 Intent shareIntent;
                 shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                shareIntent.putExtra(Intent.EXTRA_TEXT,islamiDes.get(position)+" Download aplikasi Aneka Status secara gratis " + "https://play.google.com/store/apps/details?id=" +context.getPackageName());
+                shareIntent.putExtra(Intent.EXTRA_TEXT,stripHtml(islamiDes.get(position))+" Download aplikasi Aneka Status secara gratis " + "https://play.google.com/store/apps/details?id=" +context.getPackageName());
                 shareIntent.setType("text/plain");
                 context.startActivity(Intent.createChooser(shareIntent,"Share with"));
             }

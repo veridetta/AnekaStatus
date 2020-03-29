@@ -151,7 +151,8 @@ public class LucuFragment extends Fragment {
                 Elements elGambar = BaperElementDataSize.select("div[class=entry-body media] div[class=clearfix] div[class=ktz-featuredimg] a[class=ktz_thumbnail]").eq(i);
                 gambara = elGambar.select("img").eq(0).attr("src");
                 Elements Edes = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post]").eq(i);
-                des = Edes.text().trim();
+                Edes.select("img").remove();
+                des = Edes.html();
                 Elements elWaktu = BaperElementDataSize.select("div[class=meta-post]").eq(i);
                 waktu = elWaktu.select("div").eq(0).select("span[class=entry-date updated] a").text().trim();
                 penerbit = elWaktu.select("div").eq(0).select("span[class=entry-author vcard] a").text().trim();

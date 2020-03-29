@@ -1,6 +1,8 @@
 package com.vrcorp.anekastatus;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;

@@ -34,7 +34,7 @@ import java.util.List;
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
 public class CariActivity extends AppCompatActivity {
-    String urlnya, txtJudul;
+    String urlnya, txtJudul, shareenya="";
     private ActionBar toolbar;
     TextView jdul;
     LinearLayout no_result;
@@ -127,7 +127,7 @@ public class CariActivity extends AppCompatActivity {
             // Locate the content attribute
             int BaperElementSize = BaperElementDataSize.size();
 
-            //System.out.println("jumlah data"+mElementSize);
+            System.out.println("jumlah data"+BaperElementSize);
             for (int i = 0; i < BaperElementSize; i++) {
                 //Judul old-----
                 //Elements ElemenJudul = BaperElementDataSize.select("div[class=entry-body media] h2[class=entry-title ktz-titlemini]").eq(i);
@@ -143,7 +143,9 @@ public class CariActivity extends AppCompatActivity {
                 gambara = elGambar.select("img").eq(0).attr("src");
 
                 Elements Edes = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post]").eq(i);
-                des = Edes.text().trim();
+                Edes.select("img").remove();
+                shareenya=Edes.text().trim();
+                des = Edes.html();
                 Elements elWaktu = BaperElementDataSize.select("div[class=meta-post]").eq(i);
                 waktu = elWaktu.select("div").eq(0).select("span[class=entry-date updated] a").text().trim();
                 penerbit = elWaktu.select("div").eq(0).select("span[class=entry-author vcard] a").text().trim();
