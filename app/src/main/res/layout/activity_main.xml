@@ -8,6 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="@dimen/_40sdp"
         android:orientation="vertical">
         <!--<include layout="@layout/app_bar" />-->
         <com.github.florent37.materialviewpager.MaterialViewPager

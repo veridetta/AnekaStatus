@@ -1,10 +1,15 @@
 package com.vrcorp.anekastatus.adapter;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +18,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +36,13 @@ import com.vrcorp.anekastatus.model.MotivasiModel;
 import com.vrcorp.anekastatus.model.RemajaModel;
 import com.vrcorp.anekastatus.model.RomantisModel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class RomantisAdapter extends RecyclerView.Adapter<RomantisAdapter.MyViewHolder> {
@@ -71,11 +83,11 @@ public class RomantisAdapter extends RecyclerView.Adapter<RomantisAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tJudul, tWaktu;
-        WebView tDes;
+        TextView tDes;
         int tFav;
-        ImageView gArtikel, gFav;
+        ImageView gArtikel, gFav, gIsi;
         CardView cArtikel;
-        LinearLayout btnShare, btnLike;
+        LinearLayout btnShare, btnLike, btnSave;
         public MyViewHolder(View view) {
             super(view);
             tJudul = view.findViewById(R.id.art_judul);
@@ -84,6 +96,8 @@ public class RomantisAdapter extends RecyclerView.Adapter<RomantisAdapter.MyView
             gArtikel= view.findViewById(R.id.art_photo);
             cArtikel = view.findViewById(R.id.card_artikel);
             gFav = view.findViewById(R.id.img_like);
+            gIsi = view.findViewById(R.id.img_status);
+            btnSave = view.findViewById(R.id.btn_save);
             btnLike = view.findViewById(R.id.btn_like);
             btnShare= view.findViewById(R.id.btn_share);
         }
@@ -102,12 +116,48 @@ public class RomantisAdapter extends RecyclerView.Adapter<RomantisAdapter.MyView
             return  Html.fromHtml(html).toString();
         }
     }
+    private void saveImage(Bitmap bitmap, @NonNull String name){
+        try{
+            boolean saved;
+            OutputStream fos;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                ContentResolver resolver = context.getContentResolver();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
+                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/" + "Aneka_status");
+                Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                fos = resolver.openOutputStream(imageUri);
+            }else{
+                String imagesDir = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DCIM
+                ).toString() + File.separator + "Aneka_status";
+                File file = new File(imagesDir);
+                if(!file.exists()){
+                    file.mkdirs();
+                }
+                File image = new File(imagesDir, name+".png");
+                fos = new FileOutputStream(image);
+            }
+            saved = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+            if(saved){
+                Toast.makeText(context,"Gambar berhasil tersimpan di galeri",Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(context,"Menyimpan Gagal",Toast.LENGTH_LONG).show();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         //final BaperModel Baper = baperModelList.get(position);
         this.total = total;
         holder.tJudul.setText(islamijudulList.get(position));
-        holder.tDes.loadDataWithBaseURL(null, islamiDes.get(position), "text/html", "utf-8", null);
+        holder.tDes.setText(stripHtml(islamiDes.get(position)));
         holder.tWaktu.setText(islamiwaktuList.get(position));
         Glide.with(holder.gArtikel.getContext())
                 .load(Uri.parse(islamiphotoList.get(position)))
@@ -126,6 +176,49 @@ public class RomantisAdapter extends RecyclerView.Adapter<RomantisAdapter.MyView
                 intent.putExtra("gambar",islamiphotoList.get(position));
                 context.startActivity(intent);
             }
+        });
+        holder.tDes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra("url",islamiurlList.get(position));
+                intent.putExtra("gambar",islamiphotoList.get(position));
+                context.startActivity(intent);
+            }
+        });
+        if(islamikategoriList.get(position).equals("")){
+            holder.btnSave.setVisibility(View.GONE);
+        }else{
+            holder.btnSave.setVisibility(View.VISIBLE);
+            Glide.with(holder.gIsi.getContext())
+                    .load(Uri.parse(islamikategoriList.get(position)))
+                    .apply(RequestOptions.centerCropTransform())
+                    .into(new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            holder.gIsi.setImageDrawable(resource);
+                        }
+                    });
+
+
+        }
+        holder.btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Date d = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HH_mm_ss");
+                final String currentTimeStamp = dateFormat.format(new Date());
+                Glide.with(context)
+                        .asBitmap()
+                        .load(Uri.parse(islamikategoriList.get(position)))
+                        .into(new SimpleTarget<Bitmap>(100,100) {
+                            @Override
+                            public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                saveImage(resource,"aneka-status"+currentTimeStamp);
+                            }
+                        });
+            }
+
         });
         helper = new DBHelper(context);
         success = helper.cekFav(islamiurlList.get(position));
@@ -168,7 +261,7 @@ public class RomantisAdapter extends RecyclerView.Adapter<RomantisAdapter.MyView
                             });
                     helper.insertIntoDB(1,islamijudulList.get(position),
                             islamiphotoList.get(position),islamiurlList.get(position),
-                            islamiDes.get(position),"","1",
+                            islamiDes.get(position),islamikategoriList.get(position),"1",
                             islamiwaktuList.get(position),islamipenerbitList.get(position));
                     favoritStatus=1;
                 }

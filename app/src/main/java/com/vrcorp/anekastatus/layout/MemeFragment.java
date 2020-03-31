@@ -17,8 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
 import com.vrcorp.anekastatus.R;
-import com.vrcorp.anekastatus.adapter.MotivasiAdapter;
-import com.vrcorp.anekastatus.model.MotivasiModel;
+import com.vrcorp.anekastatus.adapter.MemeAdapter;
+import com.vrcorp.anekastatus.adapter.RemajaAdapter;
+import com.vrcorp.anekastatus.model.RemajaModel;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,7 +33,7 @@ import java.util.List;
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
 
-public class MotivasiFragment extends Fragment {
+public class MemeFragment extends Fragment {
     ShimmerLayout sh_art;
     View view;
     RecyclerView Baper_art;
@@ -40,9 +41,9 @@ public class MotivasiFragment extends Fragment {
     LinearLayout kosong;
     Document mBlogDocument  = null, cardDoc = null;
     String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, gambarBesar;
-    private List<MotivasiModel> baperDataList;
-    MotivasiAdapter mDataAdapter;
-    String url="https://www.status.co.id/aneka/category/motivasi/";
+    private List<RemajaModel> baperDataList;
+    MemeAdapter mDataAdapter;
+    String url="https://www.status.co.id/aneka/category/meme-comic/";
     private ArrayList<String> islamijudulList= new ArrayList<>();
     private ArrayList<String> islamigambarList= new ArrayList<String>();
     private ArrayList<String> islamipenerbitList = new ArrayList<>();
@@ -56,14 +57,14 @@ public class MotivasiFragment extends Fragment {
     String next;
     private static final boolean GRID_LAYOUT = false;
     Elements eList;
-    public MotivasiFragment() {
+    public MemeFragment() {
         // Required empty public constructor
     }
 
 
     // TODO: Rename and change types and number of parameters
-    public static MotivasiFragment newInstance(String param1, String param2) {
-        MotivasiFragment fragment = new MotivasiFragment();
+    public static MemeFragment newInstance(String param1, String param2) {
+        MemeFragment fragment = new MemeFragment();
         Bundle args = new Bundle();
 
         fragment.setArguments(args);
@@ -81,7 +82,7 @@ public class MotivasiFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_motivasi, container, false);
+        view = inflater.inflate(R.layout.fragment_remaja, container, false);
         Baper_art = view.findViewById(R.id.rc_art);
         sh_art = view.findViewById(R.id.sh_art);
         kosong = view.findViewById(R.id.kosong);
@@ -98,7 +99,7 @@ public class MotivasiFragment extends Fragment {
                     Log.d("-----","end");
                     url = NextPage;
                     if(next.equals("Next »")){
-                        new Motivasi().execute();
+                        new Remaja().execute();
                         pDialog = new ProgressDialog(getActivity());
                         pDialog.setMessage("Memuat data ...");
                         pDialog.setIndeterminate(false);
@@ -112,21 +113,21 @@ public class MotivasiFragment extends Fragment {
         return view;
     }
     private void BaperCek(){
-        baperDataList= new ArrayList<MotivasiModel>();
+        baperDataList= new ArrayList<RemajaModel>();
         if(baperDataList.isEmpty()){
-            new Motivasi().execute();
+            new Remaja().execute();
         }else{
             //baperDataList.clear();
-            new Motivasi().execute();
+            new Remaja().execute();
         }
         sh_art.startShimmerAnimation();
     }
-    private class Motivasi extends AsyncTask<Void, Void, Void> {
+    private class Remaja extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             // NO CHANGES TO UI TO BE DONE HERE
-            baperDataList= new ArrayList<MotivasiModel>();
-            mDataAdapter = new MotivasiAdapter( getActivity(), islamijudulList,
+            baperDataList= new ArrayList<RemajaModel>();
+            mDataAdapter = new MemeAdapter( getActivity(), islamijudulList,
                     islamikategoriList,
                     islamigambarList, islamiurlList,islamipenerbitList
                     ,islamiwaktuList,islamiDesList, islamifavList);
@@ -149,12 +150,23 @@ public class MotivasiFragment extends Fragment {
                 Elements elGambar = BaperElementDataSize.select("div[class=entry-body media] div[class=clearfix] div[class=ktz-featuredimg] a[class=ktz_thumbnail]").eq(i);
                 gambara = elGambar.select("img").eq(0).attr("src");
                 Elements Edes = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post]").eq(i);
-                gambarBesar=Edes.select("img").eq(1).attr("src");
-                Edes.select("img").remove();
-                des = Edes.html();
+                //des = Edes.html();
                 Elements elWaktu = BaperElementDataSize.select("div[class=meta-post]").eq(i);
                 waktu = elWaktu.select("div").eq(0).select("span[class=entry-date updated] a").text().trim();
                 penerbit = elWaktu.select("div").eq(0).select("span[class=entry-author vcard] a").text().trim();
+                String paragraph="";
+                gambarBesar=Edes.select("img").eq(1).attr("src");
+                Edes.select("img").remove();
+                des = Edes.html();
+                /*
+                for(int is=0;is<listIsi.size();is++){
+                    if (is>0){
+                        paragraph=paragraph+"<p>"+listIsi.eq(is).text().trim()+"</p>";
+                    }else{
+
+                    }
+                }
+                */
                 islamijudulList.add(Nama);
                 islamiurlList.add(urlPosting);
                 islamipenerbitList.add(penerbit);
@@ -192,6 +204,7 @@ public class MotivasiFragment extends Fragment {
         @Override
         protected void onPostExecute(Void result) {
             System.out.println("total data"+islamijudulList.size());
+            System.out.println("Meme des "+islamikategoriList);
             if(islamijudulList.size()>0){
                 Baper_art.setHasFixedSize(false);
                 success=1;

@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.vrcorp.anekastatus">
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"  />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name=".app.AppController"
@@ -21,7 +22,7 @@
         <activity android:name=".CariActivity"></activity>
         <activity android:name=".AboutActivity" />
         <activity android:name=".FavActivity" />
-        <activity android:name=".DetailActivity" />
+        <activity android:name=".DetailActivity" android:windowSoftInputMode="adjustPan" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

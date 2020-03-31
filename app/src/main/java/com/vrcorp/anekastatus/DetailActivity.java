@@ -2,20 +2,27 @@ package com.vrcorp.anekastatus;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +43,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.vrcorp.anekastatus.adapter.CommentAdapter;
 import com.vrcorp.anekastatus.adapter.IslamiAdapter;
 import com.vrcorp.anekastatus.app.AppController;
@@ -48,9 +57,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,24 +73,26 @@ import io.supercharge.shimmerlayout.ShimmerLayout;
 
 public class DetailActivity extends AppCompatActivity {
     LinearLayout desKategori, desKonten, btn_comment;
-    CardView cFav, cShare, cBack;
-    ImageView bgDes, desFav;
+    CardView cFav, cShare, cBack, cSave;
+    ImageView bgDes, desFav, imgIsi;
     String paragraph="", comment_id, shareenya ="";
     TextView des_judul, des_penerbit, des_waktu;
     EditText input_com_isi,input_com_nama, input_com_email;
-    WebView des_isi;
+    TextView des_isi;
     SharedPreferences.Editor sharedPreferences;
     ShimmerLayout sh_des;
     DBHelper helper;
     Boolean stataus;
     RecyclerView rc_comment;
     ProgressDialog pDialog;
-    String urlnya, Nama, gambara, urlPosting, waktu, penerbit, isi, comment_name, comment_isi="", comment_waktu, comment_gambar;
+    String urlnya, Nama, gambara, gambarBesar="", urlPosting, waktu, penerbit, isi, comment_name, comment_isi="", comment_waktu, comment_gambar;
     int success=0, favoritStatus=0;
     private ArrayList<String> judulList= new ArrayList<>();
     private ArrayList<String> gambarList= new ArrayList<String>();
     private ArrayList<String> waktuList = new ArrayList<>();
     private ArrayList<String> desList = new ArrayList<String>();
+    private AdView adView;
+    AdRequest adRequest;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +101,8 @@ public class DetailActivity extends AppCompatActivity {
         cFav = findViewById(R.id.des_fav);
         cShare = findViewById(R.id.des_share);
         cBack = findViewById(R.id.des_back);
+        cSave = findViewById(R.id.des_save);
+        imgIsi = findViewById(R.id.img_status);
         desKonten = findViewById(R.id.des_content);
         bgDes = findViewById(R.id.des_bg_art);
         des_judul = findViewById(R.id.des_art_judul);
@@ -98,10 +116,20 @@ public class DetailActivity extends AppCompatActivity {
         input_com_isi=findViewById(R.id.input_comment_isi);
         input_com_nama =findViewById(R.id.input_comment_name);
         helper = new DBHelper(this);
+        adView = (AdView) findViewById(R.id.adView);
+        adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
         Intent intent = getIntent();
         SharedPreferences sharedPreferences1 = getSharedPreferences("anekaStatus",MODE_PRIVATE);
         stataus=sharedPreferences1.getBoolean("status",false);
+        input_com_isi.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
 
+                }
+            }
+        });
         if (stataus){
             input_com_email.setEnabled(false);
             input_com_nama.setEnabled(false);
@@ -161,7 +189,7 @@ public class DetailActivity extends AppCompatActivity {
                                     desFav.setImageDrawable(resource);
                                 }
                             });
-                    helper.insertIntoDB(1,Nama,gambara,urlnya,paragraph,"","1",waktu,penerbit);
+                    helper.insertIntoDB(1,Nama,gambara,urlnya,paragraph,gambarBesar,"1",waktu,penerbit);
                     favoritStatus=1;
                 }
             }
@@ -183,9 +211,63 @@ public class DetailActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(shareIntent,"Share with"));
             }
         });
+        cSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Date d = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HH_mm_ss");
+                final String currentTimeStamp = dateFormat.format(new Date());
+                Glide.with(imgIsi)
+                        .asBitmap()
+                        .load(Uri.parse(gambarBesar))
+                        .into(new SimpleTarget<Bitmap>(100,100) {
+                            @Override
+                            public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                saveImage(resource,"aneka-status"+currentTimeStamp);
+                            }
+                        });
+            }
+
+        });
         new CardGet().execute();
         //dialog.show();
         sh_des.startShimmerAnimation();
+    }
+    private void saveImage(Bitmap bitmap, @NonNull String name){
+        try{
+            boolean saved;
+            OutputStream fos;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                ContentResolver resolver = getContentResolver();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
+                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/" + "Aneka_status");
+                Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                fos = resolver.openOutputStream(imageUri);
+            }else{
+                String imagesDir = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DCIM
+                ).toString() + File.separator + "Aneka_status";
+                File file = new File(imagesDir);
+                if(!file.exists()){
+                    file.mkdirs();
+                }
+                File image = new File(imagesDir, name+".png");
+                fos = new FileOutputStream(image);
+            }
+            saved = bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+            if(saved){
+                Toast.makeText(DetailActivity.this,"Gambar berhasil tersimpan di galeri",Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(DetailActivity.this,"Menyimpan Gagal",Toast.LENGTH_LONG).show();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
     private class CardGet extends AsyncTask<Void, Void, Void> {
         @SuppressLint("WrongThread")
@@ -229,6 +311,7 @@ public class DetailActivity extends AppCompatActivity {
                 urlPosting = ElemenJudul.select("a").eq(0).attr("href");
 
                 Elements elIsi = ElemenJudul.select("div[class=entry-content ktz-wrap-content-single clearfix ktz-post]");
+                gambarBesar=elIsi.select("img").eq(1).attr("src");
                 elIsi.select("img").remove();
                 elIsi.select("ul[class=nav nav-pills ktz-pills]").remove();
                 shareenya=elIsi.text().trim();
@@ -290,7 +373,7 @@ public class DetailActivity extends AppCompatActivity {
             des_judul.setText(Nama);
             des_waktu.setText(waktu);
             des_penerbit.setText(penerbit);
-            des_isi.loadDataWithBaseURL(null, paragraph, "text/html", "utf-8", null);
+            des_isi.setText(stripHtml(paragraph));
             Glide.with(bgDes)
                     .load(Uri.parse(gambara))
                     .apply(RequestOptions.centerCropTransform())
@@ -300,6 +383,21 @@ public class DetailActivity extends AppCompatActivity {
                             bgDes.setImageDrawable(resource);
                         }
                     });
+            if(gambarBesar.equals("")){
+                cSave.setVisibility(View.GONE);
+            }else{
+                cSave.setVisibility(View.VISIBLE);
+                Glide.with(imgIsi)
+                        .load(Uri.parse(gambarBesar))
+                        .apply(RequestOptions.centerCropTransform())
+                        .into(new SimpleTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                imgIsi.setImageDrawable(resource);
+                            }
+                        });
+
+            }
             System.out.println("HTML   "+isi);
             cFav.setVisibility(View.VISIBLE);
             cShare.setVisibility(View.VISIBLE);
@@ -373,16 +471,25 @@ public class DetailActivity extends AppCompatActivity {
     public void onResume() {
         sh_des.startShimmerAnimation();
         super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
     }
 
     @Override
     public void onPause() {
         sh_des.stopShimmerAnimation();
+        if (adView != null) {
+            adView.pause();
+        }
         super.onPause();
     }
     @Override
     public void onDestroy() {
         helper.close();
+        if (adView != null) {
+            adView.destroy();
+        }
         super.onDestroy();
     }
     public String stripHtml(String html){
@@ -391,5 +498,10 @@ public class DetailActivity extends AppCompatActivity {
         }else{
             return  Html.fromHtml(html).toString();
         }
+    }
+
+    @Override
+    public void onBackPressed(){
+        finish();
     }
 }

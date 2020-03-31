@@ -38,7 +38,7 @@ public class BaperFragment extends Fragment {
     NestedScrollView scrollView;
     LinearLayout kosong;
     Document mBlogDocument  = null, cardDoc = null;
-    String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage;
+    String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, gambarBesar;
     private List<BaperModel> baperDataList;
     BaperAdapter mDataAdapter;
     String url="https://www.status.co.id/aneka/category/baper/";
@@ -162,6 +162,7 @@ public class BaperFragment extends Fragment {
                 gambara = elGambar.select("img").eq(0).attr("src");
 
                 Elements Edes = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post]").eq(i);
+                gambarBesar=Edes.select("img").eq(1).attr("src");
                 Edes.select("img").remove();
                 des = Edes.html();
                 Elements elWaktu = BaperElementDataSize.select("div[class=meta-post]").eq(i);
@@ -195,7 +196,7 @@ public class BaperFragment extends Fragment {
                 islamipenerbitList.add(penerbit);
                 islamigambarList.add(gambara);
                 islamiwaktuList.add(waktu);
-                islamikategoriList.add("");
+                islamikategoriList.add(gambarBesar);
                 islamiDesList.add(des);
                 islamifavList.add(1);
                 mDataAdapter.notifyDataSetChanged();

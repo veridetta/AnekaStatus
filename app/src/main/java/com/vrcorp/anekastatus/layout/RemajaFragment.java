@@ -39,7 +39,7 @@ public class RemajaFragment extends Fragment {
     NestedScrollView scrollView;
     LinearLayout kosong;
     Document mBlogDocument  = null, cardDoc = null;
-    String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage;
+    String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, gambarBesar;
     private List<RemajaModel> baperDataList;
     RemajaAdapter mDataAdapter;
     String url="https://www.status.co.id/aneka/category/remaja/";
@@ -154,6 +154,7 @@ public class RemajaFragment extends Fragment {
                 waktu = elWaktu.select("div").eq(0).select("span[class=entry-date updated] a").text().trim();
                 penerbit = elWaktu.select("div").eq(0).select("span[class=entry-author vcard] a").text().trim();
                 String paragraph="";
+                gambarBesar=Edes.select("img").eq(1).attr("src");
                 Edes.select("img").remove();
                 des = Edes.html();
                 System.out.println("des "+Edes);
@@ -171,7 +172,7 @@ public class RemajaFragment extends Fragment {
                 islamipenerbitList.add(penerbit);
                 islamigambarList.add(gambara);
                 islamiwaktuList.add(waktu);
-                islamikategoriList.add("");
+                islamikategoriList.add(gambarBesar);
                 islamiDesList.add(des);
                 islamifavList.add(1);
                 mDataAdapter.notifyDataSetChanged();

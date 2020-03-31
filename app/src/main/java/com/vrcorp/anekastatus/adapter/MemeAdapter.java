@@ -1,10 +1,13 @@
 package com.vrcorp.anekastatus.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -14,7 +17,6 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,22 +31,25 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.tabs.TabLayout;
 import com.vrcorp.anekastatus.DetailActivity;
 import com.vrcorp.anekastatus.R;
 import com.vrcorp.anekastatus.db.DBHelper;
-import com.vrcorp.anekastatus.model.FavModel;
-import com.vrcorp.anekastatus.model.IslamiModel;
+import com.vrcorp.anekastatus.model.MemeModel;
+import com.vrcorp.anekastatus.model.RemajaModel;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class FavAdapter extends RecyclerView.Adapter<FavAdapter.MyViewHolder> {
+public class MemeAdapter extends RecyclerView.Adapter<MemeAdapter.MyViewHolder> {
     private ArrayList<String> islamijudulList = new ArrayList<>();
     private ArrayList<String> islamikategoriList = new ArrayList<>();
     private ArrayList<String> islamiphotoList = new ArrayList<>();
@@ -58,14 +63,14 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.MyViewHolder> {
     DBHelper helper;
     int success=0, favoritStatus=0, total;
     boolean isLoadingAdded;
-    public FavAdapter(Context context, ArrayList<String> islamijudulList,
-                      ArrayList<String> islamikategoriList,
-                      ArrayList<String> islamiphotoList,
-                      ArrayList<String> islamiurlList,
-                      ArrayList<String> islamipenerbitList,
-                      ArrayList<String> islamiwaktuList,
-                      ArrayList<String> islamiDes,
-                      ArrayList<Integer> islamifavList) {
+    public MemeAdapter(Context context, ArrayList<String> islamijudulList,
+                       ArrayList<String> islamikategoriList,
+                       ArrayList<String> islamiphotoList,
+                       ArrayList<String> islamiurlList,
+                       ArrayList<String> islamipenerbitList,
+                       ArrayList<String> islamiwaktuList,
+                       ArrayList<String> islamiDes,
+                       ArrayList<Integer> islamifavList) {
         this.context = context;
         //this.baperModelList = baperModelList;
         this.islamijudulList = islamijudulList;
@@ -78,12 +83,46 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.MyViewHolder> {
         this.islamifavList=islamifavList;
     }
 
+
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView tJudul, tWaktu,tDes;
+        int tFav;
+        ImageView gArtikel, gFav, gIsi;
+        CardView cArtikel;
+        LinearLayout btnShare, btnLike, btnSave;
+        public MyViewHolder(View view) {
+            super(view);
+            tJudul = view.findViewById(R.id.art_judul);
+            tDes= view.findViewById(R.id.art_des);
+            tWaktu= view.findViewById(R.id.art_tanggal);
+            gArtikel= view.findViewById(R.id.art_photo);
+            cArtikel = view.findViewById(R.id.card_artikel);
+            gFav = view.findViewById(R.id.img_like);
+            gIsi = view.findViewById(R.id.img_status);
+            btnSave = view.findViewById(R.id.btn_save);
+            btnLike = view.findViewById(R.id.btn_like);
+            btnShare= view.findViewById(R.id.btn_share);
+        }
+    }
     public String stripHtml(String html){
-        if(Build.VERSION.SDK_INT>=android.os.Build.VERSION_CODES.N){
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.N){
             return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString();
         }else{
             return  Html.fromHtml(html).toString();
         }
+    }
+    @Override
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.status_list, parent, false);
+        return new MyViewHolder(itemView);
+    }
+    private static  Bitmap viewToBitmap(View view, int widh, int hight){
+        Bitmap bitmap = Bitmap.createBitmap(widh,hight,Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return  bitmap;
     }
     private void saveImage(Bitmap bitmap, @NonNull String name){
         try{
@@ -121,35 +160,7 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.MyViewHolder> {
         }
 
     }
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tJudul, tWaktu;
-        TextView tDes;
-        int tFav;
-        ImageView gArtikel, gFav, gIsi;
-        CardView cArtikel;
-        LinearLayout btnShare, btnLike, btnSave;
-        public MyViewHolder(View view) {
-            super(view);
-            tJudul = view.findViewById(R.id.art_judul);
-            tDes= view.findViewById(R.id.art_des);
-            tWaktu= view.findViewById(R.id.art_tanggal);
-            gArtikel= view.findViewById(R.id.art_photo);
-            cArtikel = view.findViewById(R.id.card_artikel);
-            gFav = view.findViewById(R.id.img_like);
-            gIsi = view.findViewById(R.id.img_status);
-            btnSave = view.findViewById(R.id.btn_save);
-            btnLike = view.findViewById(R.id.btn_like);
-            btnShare= view.findViewById(R.id.btn_share);
-        }
-    }
-
-    @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.status_list, parent, false);
-        return new MyViewHolder(itemView);
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         //final BaperModel Baper = baperModelList.get(position);
@@ -159,31 +170,13 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.MyViewHolder> {
         holder.tWaktu.setText(islamiwaktuList.get(position));
         Glide.with(holder.gArtikel.getContext())
                 .load(Uri.parse(islamiphotoList.get(position)))
-                .apply(RequestOptions.centerCropTransform())
                 .into(new SimpleTarget<Drawable>() {
                     @Override
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                         holder.gArtikel.setImageDrawable(resource);
                     }
                 });
-        holder.cArtikel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("gambar",islamiphotoList.get(position));
-                intent.putExtra("url",islamiurlList.get(position));
-                context.startActivity(intent);
-            }
-        });
-        holder.tDes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("url",islamiurlList.get(position));
-                intent.putExtra("gambar",islamiphotoList.get(position));
-                context.startActivity(intent);
-            }
-        });
+        System.out.println("Meme des Adapter "+islamikategoriList.get(position));
         if(islamikategoriList.get(position).equals("")){
             holder.btnSave.setVisibility(View.GONE);
         }else{
@@ -217,6 +210,25 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.MyViewHolder> {
                         });
             }
 
+        });
+        holder.cArtikel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra("url",islamiurlList.get(position));
+                intent.putExtra("gambar",islamiphotoList.get(position));
+                context.startActivity(intent);
+            }
+        });
+        final ArrayList<String> waktuList = new ArrayList<>();
+        holder.tDes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra("url",islamiurlList.get(position));
+                intent.putExtra("gambar",islamiphotoList.get(position));
+                context.startActivity(intent);
+            }
         });
         helper = new DBHelper(context);
         success = helper.cekFav(islamiurlList.get(position));
@@ -282,7 +294,7 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.MyViewHolder> {
     public int getItemCount() {
         return islamijudulList.size();
     }
-    public void swap(List<FavModel> datas){
+    public void swap(List<MemeModel> datas){
         //baperModelList.clear();
         //baperModelList.addAll(datas);
         notifyDataSetChanged();
