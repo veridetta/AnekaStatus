@@ -8,7 +8,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/_40sdp"
         android:orientation="vertical">
         <!--<include layout="@layout/app_bar" />-->
         <com.github.florent37.materialviewpager.MaterialViewPager
@@ -16,7 +15,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         app:viewpager_logo="@layout/header_logo"
-                        app:viewpager_logoMarginTop="@dimen/_60sdp"
                         app:viewpager_color="@color/orange_400"
                         app:viewpager_headerHeight="200dp"
                         app:viewpager_headerAlpha="1.0"
@@ -24,13 +22,13 @@
                         app:viewpager_hideToolbarAndTitle="false"
                         app:viewpager_enableToolbarElevation="true"
                         app:viewpager_parallaxHeaderFactor="1.5"
-                        app:viewpager_headerAdditionalHeight="20dp"
                         app:viewpager_displayToolbarWhenSwipe="true"
                         app:viewpager_transparentToolbar="false"
                         app:viewpager_animatedHeaderImage="true"
                         app:viewpager_pagerTitleStrip="@layout/my_tabs"
                         app:viewpager_disableToolbar="false">
-                    </com.github.florent37.materialviewpager.MaterialViewPager>
+
+        </com.github.florent37.materialviewpager.MaterialViewPager>
     </LinearLayout>
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"

@@ -9,12 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.florent37.materialviewpager.MaterialViewPagerHeader;
+import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
 import com.vrcorp.anekastatus.R;
 import com.vrcorp.anekastatus.adapter.RemajaAdapter;
@@ -33,29 +36,30 @@ import io.supercharge.shimmerlayout.ShimmerLayout;
 
 
 public class RemajaFragment extends Fragment {
-    ShimmerLayout sh_art;
-    View view;
-    RecyclerView Baper_art;
-    NestedScrollView scrollView;
-    LinearLayout kosong;
-    Document mBlogDocument  = null, cardDoc = null;
-    String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, gambarBesar;
+    private ShimmerLayout sh_art;
+    private View view;
+    private RecyclerView Baper_art;
+    private NestedScrollView scrollView;
+    private LinearLayout kosong,ly_utama,ly_button;
+    private Document mBlogDocument  = null, cardDoc = null;
+    private String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, gambarBesar="";
     private List<RemajaModel> baperDataList;
-    RemajaAdapter mDataAdapter;
-    String url="https://www.status.co.id/aneka/category/remaja/";
-    private ArrayList<String> islamijudulList= new ArrayList<>();
-    private ArrayList<String> islamigambarList= new ArrayList<String>();
-    private ArrayList<String> islamipenerbitList = new ArrayList<>();
-    private ArrayList<String> islamiwaktuList = new ArrayList<>();
-    private ArrayList<String> islamiurlList = new ArrayList<>();
-    private ArrayList<String> islamikategoriList = new ArrayList<>();
-    private ArrayList<String> islamiDesList = new ArrayList<>();
-    private ArrayList<Integer> islamifavList = new ArrayList<Integer>();
-    ProgressDialog pDialog;
-    int success=0, dialogShow=0, total=0;
-    String next;
+    private RemajaAdapter mDataAdapter;
+    private CardView cardNext, cardPrev;
+    private String url="https://www.status.co.id/aneka/category/remaja/";
+    private ArrayList<String> islamijudulList;
+    private ArrayList<String> islamigambarList;
+    private ArrayList<String> islamipenerbitList;
+    private ArrayList<String> islamiwaktuList;
+    private ArrayList<String> islamiurlList;
+    private ArrayList<String> islamikategoriList;
+    private ArrayList<String> islamiDesList;
+    private ArrayList<Integer> islamifavList;
+    private ProgressDialog pDialog;
+    private int success=0, dialogShow=0, total=0;
+    private String next, nextUrl,  prev, prevUrl;
     private static final boolean GRID_LAYOUT = false;
-    Elements eList;
+    private Elements eList;
     public RemajaFragment() {
         // Required empty public constructor
     }
@@ -85,27 +89,42 @@ public class RemajaFragment extends Fragment {
         Baper_art = view.findViewById(R.id.rc_art);
         sh_art = view.findViewById(R.id.sh_art);
         kosong = view.findViewById(R.id.kosong);
+        ly_utama = view.findViewById(R.id.ly_utama);
+        ly_button = view.findViewById(R.id.ly_buton);
+        cardNext = view.findViewById(R.id.card_next);
+        cardPrev= view.findViewById(R.id.card_prev);
+        scrollView = view.findViewById(R.id.mscroll);
+        MaterialViewPagerHelper.registerScrollView(getActivity(), scrollView);
         BaperCek();
-
-        Baper_art.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        cardNext.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                int visibleItemCount = new LinearLayoutManager(getActivity()).getChildCount();
-                int totalItemCount = new LinearLayoutManager(getActivity()).getItemCount();
-                int firstVisibleItemPosition = new LinearLayoutManager(getActivity()).findFirstVisibleItemPosition();
-                if (!recyclerView.canScrollVertically(1) && newState==RecyclerView.SCROLL_STATE_IDLE) {
-                    Log.d("-----","end");
-                    url = NextPage;
-                    if(next.equals("Next »")){
-                        new Remaja().execute();
-                        pDialog = new ProgressDialog(getActivity());
-                        pDialog.setMessage("Memuat data ...");
-                        pDialog.setIndeterminate(false);
-                        pDialog.setCancelable(false);
-                        pDialog.show();
-                        dialogShow=1;
-                    }
+            public void onClick(View v) {
+                url = nextUrl;
+                if(next.equals("next")){
+                    System.out.println("url next "+url);
+                    new Remaja().execute();
+                    pDialog = new ProgressDialog(getActivity());
+                    pDialog.setMessage("Memuat data ...");
+                    pDialog.setIndeterminate(false);
+                    pDialog.setCancelable(false);
+                    pDialog.show();
+                    dialogShow=1;
+                }
+            }
+        });
+        cardPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                url = prevUrl;
+                if(prev.equals("previous")){
+                    System.out.println("url prev "+url);
+                    new Remaja().execute();
+                    pDialog = new ProgressDialog(getActivity());
+                    pDialog.setMessage("Memuat data ...");
+                    pDialog.setIndeterminate(false);
+                    pDialog.setCancelable(false);
+                    pDialog.show();
+                    dialogShow=1;
                 }
             }
         });
@@ -125,6 +144,14 @@ public class RemajaFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             // NO CHANGES TO UI TO BE DONE HERE
+            islamijudulList= new ArrayList<>();
+            islamigambarList= new ArrayList<String>();
+            islamipenerbitList = new ArrayList<>();
+            islamiwaktuList = new ArrayList<>();
+            islamiurlList = new ArrayList<>();
+            islamikategoriList = new ArrayList<>();
+            islamiDesList = new ArrayList<>();
+            islamifavList = new ArrayList<Integer>();
             baperDataList= new ArrayList<RemajaModel>();
             mDataAdapter = new RemajaAdapter( getActivity(), islamijudulList,
                     islamikategoriList,
@@ -133,7 +160,7 @@ public class RemajaFragment extends Fragment {
             Document mBlogPagination = null;
             System.out.println("Next List"+url);
             try {
-                mBlogPagination = Jsoup.parse(new URL(url),50000);
+                mBlogPagination = Jsoup.parse(new URL(url),90000);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -177,22 +204,16 @@ public class RemajaFragment extends Fragment {
                 islamifavList.add(1);
                 mDataAdapter.notifyDataSetChanged();
             }
-            Elements eNext = mBlogPagination.select("nav[id=nav-index] ul[class=pagination] li");
+            Elements eNext = mBlogPagination.select("nav[id=nav-index] ul[class=pager]");
             //eList = eNext.select("li");
             int pageList = eNext.size();
-            if(pageList>0){
-
-            }else{
-                next="";
-            }
-            System.out.println("data next "+ pageList);
-            for(int n=0;n<pageList;n++){
-                if(pageList-n==1){
-                    NextPage=eNext.eq(n).select("a").eq(0).attr("href");
-                    next=eNext.eq(n).select("a").eq(0).text().trim();
-                }
-
-            }
+            prev="";
+            next="";
+            prev = eNext.select("li[class=previous]").attr("class");
+            prevUrl = eNext.select("li[class=previous] a").attr("href");
+            next = eNext.select("li[class=next]").attr("class");
+            nextUrl = eNext.select("li[class=next] a").attr("href");
+            System.out.println("data next "+ prev + next);
             System.out.println("Next List"+next);
             System.out.println("next Page "+NextPage);
             //---------------------------
@@ -206,18 +227,30 @@ public class RemajaFragment extends Fragment {
             System.out.println("total data"+islamijudulList.size());
             if(islamijudulList.size()>0){
                 Baper_art.setHasFixedSize(false);
+                if(prev.equals("previous")){
+                    cardPrev.setVisibility(View.VISIBLE);
+                }else{
+                    cardPrev.setVisibility(View.GONE);
+                }
+                if(next.equals("next")){
+                    cardNext.setVisibility(View.VISIBLE);
+                }else{
+                    cardNext.setVisibility(View.GONE);
+                }
+                ly_button.setVisibility(View.VISIBLE);
                 success=1;
                 if (GRID_LAYOUT) {
                     Baper_art.setLayoutManager(new GridLayoutManager(getActivity(), 2));
                 } else {
                     Baper_art.setLayoutManager(new LinearLayoutManager(getActivity()));
                 }
-                Baper_art.addItemDecoration(new MaterialViewPagerHeaderDecorator());
+                //Baper_art.addItemDecoration(new MaterialViewPagerHeaderDecorator());
                 Baper_art.setAdapter(mDataAdapter);
                 //rc_art.setAdapter(mDataAdapter);
                 sh_art.stopShimmerAnimation();
                 sh_art.setVisibility(View.GONE);
             }else{
+                ly_button.setVisibility(View.GONE);
                 kosong.setVisibility(View.VISIBLE);
                 sh_art.stopShimmerAnimation();
                 sh_art.setVisibility(View.GONE);

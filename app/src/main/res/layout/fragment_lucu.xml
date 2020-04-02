@@ -1,42 +1,108 @@
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ly_utama"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout
-        android:id="@+id/kosong"
-        android:visibility="gone"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tidak ada data"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:maxLength="20"
-            android:textColor="@color/grey_900"
-            android:textSize="@dimen/_15sdp"/>
-    </LinearLayout>
-    <io.supercharge.shimmerlayout.ShimmerLayout
-        android:id="@+id/sh_art"
-        android:layout_marginTop="@dimen/_150sdp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:id="@+id/mscroll"
+        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <include layout="@layout/shimmer_artikel_list"/>
-            <include layout="@layout/shimmer_artikel_list"/>
-            <include layout="@layout/shimmer_artikel_list"/>
-            <include layout="@layout/shimmer_artikel_list"/>
+            <include layout="@layout/material_view_pager_placeholder"/>
+            <LinearLayout
+                android:id="@+id/kosong"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tidak ada data"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:maxLength="20"
+                    android:textColor="@color/grey_900"
+                    android:textSize="@dimen/_15sdp"/>
+            </LinearLayout>
+            <io.supercharge.shimmerlayout.ShimmerLayout
+                android:id="@+id/sh_art"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/_150sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <include layout="@layout/shimmer_artikel_list"/>
+                    <include layout="@layout/shimmer_artikel_list"/>
+                    <include layout="@layout/shimmer_artikel_list"/>
+                    <include layout="@layout/shimmer_artikel_list"/>
+                </LinearLayout>
+            </io.supercharge.shimmerlayout.ShimmerLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rc_art"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/_10sdp"/>
+            <LinearLayout
+                android:id="@+id/ly_buton"
+                android:paddingBottom="@dimen/_40sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_prev"
+                    android:layout_marginRight="@dimen/_6sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/_20sdp"
+                    app:cardUseCompatPadding="true"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardElevation="@dimen/_2sdp"
+                    app:cardMaxElevation="@dimen/_4sdp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_12sdp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/_13sdp"
+                            android:text="Pos Terlama"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/_20sdp"
+                    app:cardUseCompatPadding="true"
+                    app:cardBackgroundColor="@color/orange_200"
+                    app:cardElevation="@dimen/_2sdp"
+                    app:cardMaxElevation="@dimen/_4sdp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_12sdp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/_13sdp"
+                            android:text="Pos Terbaru"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
         </LinearLayout>
-    </io.supercharge.shimmerlayout.ShimmerLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rc_art"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/_10sdp"/>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>
