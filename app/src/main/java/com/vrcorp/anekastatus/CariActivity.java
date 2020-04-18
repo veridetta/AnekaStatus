@@ -1,5 +1,6 @@
 package com.vrcorp.anekastatus;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vrcorp.anekastatus.adapter.BaperAdapter;
 import com.vrcorp.anekastatus.adapter.FavAdapter;
 import com.vrcorp.anekastatus.adapter.IslamiAdapter;
+import com.vrcorp.anekastatus.layout.RemajaFragment;
 import com.vrcorp.anekastatus.model.BaperModel;
 import com.vrcorp.anekastatus.model.FavModel;
 
@@ -37,20 +40,25 @@ public class CariActivity extends AppCompatActivity {
     String urlnya, txtJudul, shareenya="";
     private ActionBar toolbar;
     TextView jdul;
-    LinearLayout no_result;
+    LinearLayout no_result,ly_button, ly_utama;
     FavAdapter mDataAdapter;
     SearchView cari;
+    String url;
+    private CardView cardNext, cardPrev;
     private List<FavModel> baperDataList;
-    String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, cariVal;
-    private ArrayList<String> islamijudulList= new ArrayList<>();
-    private ArrayList<String> islamigambarList= new ArrayList<String>();
-    private ArrayList<String> islamipenerbitList = new ArrayList<>();
-    private ArrayList<String> islamiwaktuList = new ArrayList<>();
-    private ArrayList<String> islamiurlList = new ArrayList<>();
-    private ArrayList<String> islamikategoriList = new ArrayList<>();
-    private ArrayList<String> islamiDesList = new ArrayList<>();
-    private ArrayList<Integer> islamifavList = new ArrayList<Integer>();
+    String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, cariVal, gambarBesar="";
+    private ArrayList<String> islamijudulList;
+    private ArrayList<String> islamigambarList;
+    private ArrayList<String> islamipenerbitList;
+    private ArrayList<String> islamiwaktuList;
+    private ArrayList<String> islamiurlList;
+    private ArrayList<String> islamikategoriList;
+    private ArrayList<String> islamiDesList;
+    private ArrayList<Integer> islamifavList;
     RecyclerView rc_cari;
+    private ProgressDialog pDialog;
+    private int success=0, dialogShow=0, total=0;
+    private String next, nextUrl,  prev, prevUrl;
     int data=0;
     ShimmerLayout sh_cari;
     @Override
@@ -69,6 +77,9 @@ public class CariActivity extends AppCompatActivity {
         cari.setQueryHint("Masukan Kata Kunci");
         cari.onActionViewExpanded();
         cari.setIconified(true);
+        ly_button = findViewById(R.id.ly_buton);
+        cardNext = findViewById(R.id.card_next);
+        cardPrev= findViewById(R.id.card_prev);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -79,19 +90,20 @@ public class CariActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 cariVal = cari.getQuery().toString();
+                url = "https://www.status.co.id/aneka/search/"+cariVal;
                 if(cariVal.length()<3){
                     Toast.makeText(CariActivity.this,"Minimal kata minimal 3 huruf",Toast.LENGTH_LONG).show();
                 }else if(cariVal.length()>10){
                     Toast.makeText(CariActivity.this,"Maksimal 10 huruf",Toast.LENGTH_LONG).show();
                 }else{
                     no_result.setVisibility(View.GONE);
-                    islamijudulList.clear();
-                    islamigambarList.clear();
-                    islamipenerbitList.clear();
-                    islamiwaktuList.clear();
-                    islamiurlList.clear();
-                    islamikategoriList.clear();
-                    islamifavList.clear();
+                    //islamijudulList.clear();
+                    //islamigambarList.clear();
+                    //islamipenerbitList.clear();
+                    //islamiwaktuList.clear();
+                    //islamiurlList.clear();
+                    //islamikategoriList.clear();
+                    //islamifavList.clear();
                     new CardGet().execute();
                     sh_cari.setVisibility(View.VISIBLE);
                     sh_cari.startShimmerAnimation();
@@ -105,12 +117,51 @@ public class CariActivity extends AppCompatActivity {
                 return false;
             }
         });
+        cardNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                url = nextUrl;
+                if(next.equals("next")){
+                    System.out.println("url next "+url);
+                    new CardGet().execute();
+                    pDialog = new ProgressDialog(CariActivity.this);
+                    pDialog.setMessage("Memuat data ...");
+                    pDialog.setIndeterminate(false);
+                    pDialog.setCancelable(false);
+                    pDialog.show();
+                    dialogShow=1;
+                }
+            }
+        });
+        cardPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                url = prevUrl;
+                if(prev.equals("previous")){
+                    System.out.println("url prev "+url);
+                    new CardGet().execute();
+                    pDialog = new ProgressDialog(CariActivity.this);
+                    pDialog.setMessage("Memuat data ...");
+                    pDialog.setIndeterminate(false);
+                    pDialog.setCancelable(false);
+                    pDialog.show();
+                    dialogShow=1;
+                }
+            }
+        });
     }
     private class CardGet extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             // NO CHANGES TO UI TO BE DONE HERE
-            String url = "https://www.status.co.id/aneka/search/"+cariVal;
+            islamijudulList= new ArrayList<>();
+            islamigambarList= new ArrayList<String>();
+            islamipenerbitList = new ArrayList<>();
+            islamiwaktuList = new ArrayList<>();
+            islamiurlList = new ArrayList<>();
+            islamikategoriList = new ArrayList<>();
+            islamiDesList = new ArrayList<>();
+            islamifavList = new ArrayList<Integer>();
             baperDataList= new ArrayList<FavModel>();
             mDataAdapter = new FavAdapter( CariActivity.this, islamijudulList,
                     islamikategoriList,
@@ -143,6 +194,7 @@ public class CariActivity extends AppCompatActivity {
                 gambara = elGambar.select("img").eq(0).attr("src");
 
                 Elements Edes = BaperElementDataSize.select("div[class=entry-body media] div[class=media-body ktz-post]").eq(i);
+                gambarBesar=Edes.select("img").eq(1).attr("src");
                 Edes.select("img").remove();
                 shareenya=Edes.text().trim();
                 des = Edes.html();
@@ -154,11 +206,23 @@ public class CariActivity extends AppCompatActivity {
                 islamipenerbitList.add(penerbit);
                 islamigambarList.add(gambara);
                 islamiwaktuList.add(waktu);
-                islamikategoriList.add("");
+                islamikategoriList.add(gambarBesar);
                 islamiDesList.add(des);
                 islamifavList.add(1);
                 mDataAdapter.notifyDataSetChanged();
             }
+            Elements eNext = mBlogPagination.select("nav[id=nav-index] ul[class=pager]");
+            //eList = eNext.select("li");
+            int pageList = eNext.size();
+            prev="";
+            next="";
+            prev = eNext.select("li[class=previous]").attr("class");
+            prevUrl = eNext.select("li[class=previous] a").attr("href");
+            next = eNext.select("li[class=next]").attr("class");
+            nextUrl = eNext.select("li[class=next] a").attr("href");
+            System.out.println("data next "+ prev + next);
+            System.out.println("Next List"+next);
+            System.out.println("next Page "+NextPage);
             //---------------------------
             //--------------------------
             //--------------------------
@@ -171,6 +235,17 @@ public class CariActivity extends AppCompatActivity {
             //attachToRecyclerView
             if(islamijudulList.size()>0){
                 //Use this now
+                if(prev.equals("previous")){
+                    cardPrev.setVisibility(View.VISIBLE);
+                }else{
+                    cardPrev.setVisibility(View.GONE);
+                }
+                if(next.equals("next")){
+                    cardNext.setVisibility(View.VISIBLE);
+                }else{
+                    cardNext.setVisibility(View.GONE);
+                }
+                ly_button.setVisibility(View.VISIBLE);
                 rc_cari.setLayoutManager(mLayoutManager);
                 rc_cari.setAdapter(mDataAdapter);
                 //rc_art.setAdapter(mDataAdapter);
@@ -178,11 +253,16 @@ public class CariActivity extends AppCompatActivity {
                 sh_cari.stopShimmerAnimation();
                 sh_cari.setVisibility(View.GONE);
             }else{
+                ly_button.setVisibility(View.GONE);
                 jdul.setVisibility(View.GONE);
                 sh_cari.stopShimmerAnimation();
                 sh_cari.setVisibility(View.GONE);
                 rc_cari.setVisibility(View.GONE);
                 no_result.setVisibility(View.VISIBLE);
+            }
+            if(dialogShow>0){
+                pDialog.dismiss();
+                dialogShow=0;
             }
             System.out.println("Mentok"+islamijudulList);
             //--------------------------

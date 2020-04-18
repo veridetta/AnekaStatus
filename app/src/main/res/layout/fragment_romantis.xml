@@ -55,6 +55,7 @@
                 android:padding="@dimen/_10sdp"/>
             <LinearLayout
                 android:id="@+id/ly_buton"
+                android:visibility="gone"
                 android:paddingBottom="@dimen/_40sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
