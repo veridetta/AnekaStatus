@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.vrcorp.anekastatus">
+    package="com.vrcorp.anekastatusv2">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"  />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:name=".app.AppController"
+        android:name="com.vrcorp.anekastatusv2.app.AppController"
         android:allowBackup="true"
-        android:icon="@drawable/iconlogo"
+        android:icon="@drawable/logonew"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/iconlogo"
+        android:roundIcon="@drawable/logonew"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+        <!--
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-592340675­0110132~5364389978"/>
-        <activity android:name=".CariActivity"></activity>
-        <activity android:name=".AboutActivity" />
-        <activity android:name=".FavActivity" />
-        <activity android:name=".DetailActivity" android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".MainActivity">
+            android:value="ca-app-pub-592340675­0110132~5364389978"/> -->
+        <activity android:name="com.vrcorp.anekastatusv2.CariActivity"></activity>
+        <activity android:name="com.vrcorp.anekastatusv2.AboutActivity" />
+        <activity android:name="com.vrcorp.anekastatusv2.FavActivity" />
+        <activity android:name="com.vrcorp.anekastatusv2.DetailActivity" android:windowSoftInputMode="adjustPan" />
+        <activity android:name="com.vrcorp.anekastatusv2.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

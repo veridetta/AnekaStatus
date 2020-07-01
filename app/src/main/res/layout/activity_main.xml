@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
-
+        <!--
         <com.google.android.gms.ads.AdView
             xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/adView"
@@ -27,7 +27,7 @@
             ads:adSize="BANNER"
             android:layout_marginBottom="@dimen/_44sdp"
             ads:adUnitId="@string/banner_home_footer" />
-
+            -->
     </RelativeLayout>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation"

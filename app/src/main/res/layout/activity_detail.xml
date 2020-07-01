@@ -342,7 +342,7 @@
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>
-    <com.google.android.gms.ads.AdView
+    <!--<com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
         android:layout_gravity="bottom|center"
@@ -352,5 +352,5 @@
         android:layout_alignParentBottom="true"
         ads:adSize="BANNER"
         ads:adUnitId="@string/banner_home_footer">
-    </com.google.android.gms.ads.AdView>
+    </com.google.android.gms.ads.AdView>-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
