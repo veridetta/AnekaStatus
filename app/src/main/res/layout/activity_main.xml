@@ -1,44 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <!--<include layout="@layout/app_bar" />-->
-        <com.github.florent37.materialviewpager.MaterialViewPager
-                        android:id="@+id/viewPager"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:viewpager_logo="@layout/header_logo"
-                        app:viewpager_color="@color/orange_400"
-                        app:viewpager_headerHeight="200dp"
-                        app:viewpager_headerAlpha="1.0"
-                        app:viewpager_hideLogoWithFade="false"
-                        app:viewpager_hideToolbarAndTitle="false"
-                        app:viewpager_enableToolbarElevation="true"
-                        app:viewpager_parallaxHeaderFactor="1.5"
-                        app:viewpager_displayToolbarWhenSwipe="true"
-                        app:viewpager_transparentToolbar="false"
-                        app:viewpager_animatedHeaderImage="true"
-                        app:viewpager_pagerTitleStrip="@layout/my_tabs"
-                        app:viewpager_disableToolbar="false">
+        android:layout_height="match_parent">
+        <FrameLayout
+            android:layout_marginBottom="@dimen/_45sdp"
+            android:background="@color/white"
+            android:id="@+id/frame_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
 
-        </com.github.florent37.materialviewpager.MaterialViewPager>
-    </LinearLayout>
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
-        android:layout_gravity="bottom|center"
-        android:layout_width="wrap_content"
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ads:adSize="BANNER"
+            android:layout_marginBottom="@dimen/_44sdp"
+            ads:adUnitId="@string/banner_home_footer" />
+
+    </RelativeLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/admob_banner_id">
-    </com.google.android.gms.ads.AdView>
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        app:itemBackground="@color/blue_400"
+        android:foreground="?attr/selectableItemBackground"
+        app:itemIconTint="@drawable/drawer_item_color"
+        app:itemTextColor="@drawable/drawer_item_color"
+        app:labelVisibilityMode="labeled"
+        app:theme="@style/Mytheme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:menu="@menu/navigation" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

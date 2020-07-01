@@ -1,28 +1,46 @@
-package com.vrcorp.anekastatus;
+package com.vrcorp.anekastatus.layout;
 
-import android.os.Build;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
+import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.vrcorp.anekastatus.adapter.BaperAdapter;
+import com.vrcorp.anekastatus.FavActivity;
+import com.vrcorp.anekastatus.R;
+import com.vrcorp.anekastatus.adapter.FavAdapter;
 import com.vrcorp.anekastatus.adapter.IslamiAdapter;
 import com.vrcorp.anekastatus.db.DBHelper;
 import com.vrcorp.anekastatus.db.DBModel;
+import com.vrcorp.anekastatus.model.FavModel;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
-public class FavActivity extends AppCompatActivity {
+public class FavFragment extends Fragment {
+    private View view;
     String Nama, gambara, urlPosting, waktu, penerbit, cariVal;
     private ArrayList<String> judulList= new ArrayList<>();
     private ArrayList<String> gambarList= new ArrayList<String>();
@@ -39,19 +57,39 @@ public class FavActivity extends AppCompatActivity {
     ShimmerLayout sh_fav;
     TextView favJudul;
     List<DBModel> dbList;
+    public FavFragment() {
+        // Required empty public constructor
+    }
+
+
+    // TODO: Rename and change types and number of parameters
+    public static FavFragment newInstance(String param1, String param2) {
+        FavFragment fragment = new FavFragment();
+        Bundle args = new Bundle();
+
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fav);
+        //Toast.makeText(getActivity(),"Pertamaa",Toast.LENGTH_LONG).show();
+        //dialog.show();
+    }
 
-        rc_fav = findViewById(R.id.rc_fav);
-        no_result = findViewById(R.id.no_result);
-        favJudul = findViewById(R.id.fav_judul);
-        sh_fav = findViewById(R.id.shimmer_fav);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(R.layout.activity_fav, container, false);
+        rc_fav = view.findViewById(R.id.rc_fav);
+        no_result = view.findViewById(R.id.no_result);
+        favJudul = view.findViewById(R.id.fav_judul);
+        sh_fav = view.findViewById(R.id.shimmer_fav);
         sh_fav.startShimmerAnimation();
         //Cursor cursor = db.fetchMahasiswa(tnim);
-        helper = new DBHelper(getApplicationContext());
+        helper = new DBHelper(getContext());
         totalData = helper.getTotalFav();
         dbList= new ArrayList<DBModel>();
         dbList = helper.getFromDB();
@@ -78,9 +116,9 @@ public class FavActivity extends AppCompatActivity {
                 }
             }
             if(mentok>0){
-                IslamiAdapter mDataAdapter = new IslamiAdapter( FavActivity.this, judulList, kategoriList,
+                IslamiAdapter mDataAdapter = new IslamiAdapter( getActivity(), judulList, kategoriList,
                         gambarList, urlList,penerbitList,waktuList,desList,favList);
-                RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),1, LinearLayoutManager.VERTICAL, false);
+                RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(),1, LinearLayoutManager.VERTICAL, false);
                 rc_fav.setLayoutManager(mLayoutManager);
                 rc_fav.setAdapter(mDataAdapter);
                 sh_fav.stopShimmerAnimation();
@@ -90,5 +128,10 @@ public class FavActivity extends AppCompatActivity {
             }
 
         }
+
+        return view;
     }
+
+
+
 }

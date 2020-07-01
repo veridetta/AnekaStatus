@@ -8,17 +8,21 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
@@ -28,8 +32,12 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vrcorp.anekastatus.adapter.ArtikelAdapter;
+import com.vrcorp.anekastatus.layout.CariFragment;
+import com.vrcorp.anekastatus.layout.FavFragment;
 import com.vrcorp.anekastatus.layout.IslamiFragment;
+import com.vrcorp.anekastatus.layout.KategoriFragment;
 import com.vrcorp.anekastatus.layout.MemeFragment;
 import com.vrcorp.anekastatus.layout.RemajaFragment;
 import com.vrcorp.anekastatus.layout.BaperFragment;
@@ -40,125 +48,107 @@ import com.vrcorp.anekastatus.layout.RomantisFragment;
 
 public class MainActivity extends AppCompatActivity {private ArtikelAdapter adapter;
     //private TabLayout tabLayout;
-    private MaterialViewPager viewPager;
+
     String TAG = "Tag";
     Toolbar toolbar;
     ActionBar actionBar;
     NestedScrollView scroll;
-    private AdView adView;
-    AdRequest adRequest;
+    private AdView mAdView;
     private static int CODE_WRITE_SETTINGS_PERMISSION;
+    boolean doubleBackToExitPressedOnce = false;
+    int io = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewPager = findViewById(R.id.viewPager);
-
-        adView = (AdView) findViewById(R.id.adView);
-        adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         //scroll = findViewById(R.id.scRoll);
-        ViewPager viewpager = viewPager.getViewPager();
-        toolbar = viewPager.getToolbar();
-        setSupportActionBar(toolbar);
-        actionBar = getSupportActionBar();
-        actionBar.setTitle("");
-        //actionBar.hide();
         //tabLayout = findViewById(R.id.tabLayout);
         isWriteStoragePermissionGranted();
         isReadStoragePermissionGranted();
-        if (isReadStoragePermissionGranted() && isWriteStoragePermissionGranted()) {
-            Toast.makeText(MainActivity.this, "Penyimpanan diijinkan", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(MainActivity.this, "Silahkan beri izin penyimpanan untuk dapat menikmati aplikasi ini, Restart aplikasi", Toast.LENGTH_LONG).show();
+        if(isReadStoragePermissionGranted() && isWriteStoragePermissionGranted()){
+            loadFragment(new BaperFragment());
         }
-        adapter = new ArtikelAdapter(getSupportFragmentManager());
-        adapter.addFragment(new RemajaFragment(), "Remaja");
-        adapter.addFragment(new BaperFragment(), "Baper");
-        adapter.addFragment(new MemeFragment(), "Meme Comic");
-        adapter.addFragment(new LucuFragment(), "Lucu");
-        adapter.addFragment(new MotivasiFragment(), "Motivasi");
-        adapter.addFragment(new RomantisFragment(), "Romantis");
-        adapter.addFragment(new IslamiFragment(), "Islami");
-        //MaterialViewPagerHelper.registerScrollView(this, scroll);
-        viewpager.setAdapter(adapter);
-        viewPager.getPagerTitleStrip().setViewPager(viewPager.getViewPager());
-        viewPager.setMaterialViewPagerListener(new MaterialViewPager.Listener() {
+
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                // Check the LogCat to get your test device ID
+                //.addTestDevice("725F7196D12AFC68048ED82BD5C6F3A8")
+                .build();
+        mAdView.setAdListener(new AdListener() {
             @Override
-            public HeaderDesign getHeaderDesign(int page) {
-                switch (page) {
-                    case 0:
-                        return HeaderDesign.fromColorResAndUrl(
-                                R.color.orange_400,
-                                "http://phandroid.s3.amazonaws.com/wp-content/uploads/2014/06/android_google_moutain_google_now_1920x1080_wallpaper_Wallpaper-HD_2560x1600_www.paperhi.com_-640x400.jpg");
-                    case 1:
-                        return HeaderDesign.fromColorResAndUrl(
-                                R.color.blue_400,
-                                "http://www.hdiphonewallpapers.us/phone-wallpapers/540x960-1/540x960-mobile-wallpapers-hd-2218x5ox3.jpg");
-                    case 2:
-                        return HeaderDesign.fromColorResAndUrl(
-                                R.color.red_400,
-                                "http://www.droid-life.com/wp-content/uploads/2014/10/lollipop-wallpapers10.jpg");
-                    case 3:
-                        return HeaderDesign.fromColorResAndUrl(
-                                R.color.green_400,
-                                "http://www.tothemobile.com/wp-content/uploads/2014/07/original.jpg");
-                    case 4:
-                        return HeaderDesign.fromColorResAndUrl(
-                                R.color.yellow_400,
-                                "http://www.tothemobile.com/wp-content/uploads/2014/07/original.jpg");
-                }
+            public void onAdLoaded() {
+            }
 
-                //execute others actions if needed (ex : modify your header logo)
+            @Override
+            public void onAdClosed() {
+                Toast.makeText(getApplicationContext(), "Ad is closed!", Toast.LENGTH_SHORT).show();
+            }
 
-                return null;
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                Toast.makeText(getApplicationContext(), "Ad failed to load! error code: " + errorCode, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                Toast.makeText(getApplicationContext(), "Ad left application!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
             }
         });
+        mAdView.loadAd(adRequest);
+        //actionBar = getSupportActionBar();
+        //actionBar.setTitle("");
         //tabLayout.setupWithViewPager(viewpager);
-        if (toolbar != null) {
 
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowHomeEnabled(false);
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setDisplayUseLogoEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
+    }
+    private void loadFragment(Fragment fragment) {
+        // load fragment
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Fragment fragment ;
+            switch (item.getItemId()) {
+                case R.id.nav_beranda:
+                    //mTopToolbar.setNavigationIcon(R.drawable.search);
+                    fragment = new BaperFragment();
+                    loadFragment(fragment);
+                    return true;
+                case R.id.nav_cari:
+                    //mTopToolbar.setNavigationIcon(R.drawable.search);
+                    fragment = new CariFragment();
+                    loadFragment(fragment);
+                    return true;
+                case R.id.nav_fav:
+                    //mTopToolbar.setNavigationIcon(R.drawable.search);
+                    fragment = new FavFragment();
+                    loadFragment(fragment);
+                    return true;
+                case R.id.nav_kategori:
+                    //mTopToolbar.setNavigationIcon(R.drawable.search);
+                    fragment = new KategoriFragment();
+                    loadFragment(fragment);
+                    return true;
+            }
+            return false;
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.nav_fav) {
-            Intent intent = new Intent(getApplicationContext(), FavActivity.class);
-            startActivity(intent);
-            return true;
-        }else if (id == R.id.nav_about) {
-            Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
-            startActivity(intent);
-            return true;
-        }else if (id == R.id.nav_cari) {
-            Intent intent = new Intent(getApplicationContext(), CariActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    };
     @Override
     public void onPause() {
-        if (adView != null) {
-            adView.pause();
+        if (mAdView != null) {
+            mAdView.pause();
         }
         super.onPause();
     }
@@ -166,15 +156,15 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
     @Override
     public void onResume() {
         super.onResume();
-        if (adView != null) {
-            adView.resume();
+        if (mAdView != null) {
+            mAdView.resume();
         }
     }
 
     @Override
     public void onDestroy() {
-        if (adView != null) {
-            adView.destroy();
+        if (mAdView != null) {
+            mAdView.destroy();
         }
         super.onDestroy();
     }
@@ -250,5 +240,24 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
             Log.d("TAG", "MainActivity.CODE_WRITE_SETTINGS_PERMISSION success");
             //do your code
         }
+    }
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            finish();
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }

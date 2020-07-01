@@ -1,5 +1,6 @@
 package com.vrcorp.anekastatus.layout;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -7,7 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
@@ -17,10 +20,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
-import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
 import com.vrcorp.anekastatus.R;
 import com.vrcorp.anekastatus.adapter.BaperAdapter;
+import com.vrcorp.anekastatus.adapter.MemeAdapter;
 import com.vrcorp.anekastatus.model.BaperModel;
+import com.vrcorp.anekastatus.model.MemeModel;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,7 +37,9 @@ import java.util.List;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
-public class BaperFragment extends Fragment {
+import static com.android.volley.VolleyLog.TAG;
+
+public class KategoriFragment extends Fragment {
     private ShimmerLayout sh_art;
     private View view;
     private RecyclerView Baper_art;
@@ -42,9 +48,12 @@ public class BaperFragment extends Fragment {
     private Document mBlogDocument  = null, cardDoc = null;
     private String Nama, gambara, urlPosting, waktu, penerbit, des, NextPage, gambarBesar="";
     private List<BaperModel> baperDataList;
+    private List<MemeModel> memeDateList;
     private BaperAdapter mDataAdapter;
+    private MemeAdapter memeAdapter;
     private CardView cardNext, cardPrev;
     private String url="https://www.status.co.id/aneka/category/baper/";
+    LinearLayout baper, islami, lucu, meme, motivasi, remaja,romantis;
     private ArrayList<String> islamijudulList;
     private ArrayList<String> islamigambarList;
     private ArrayList<String> islamipenerbitList;
@@ -57,15 +66,16 @@ public class BaperFragment extends Fragment {
     int success=0, dialogShow=0, total=0;
     private String next, nextUrl,  prev, prevUrl;
     private static final boolean GRID_LAYOUT = false;
+    TextView menampilkan;
     Elements eList;
-    public BaperFragment() {
+    public KategoriFragment() {
         // Required empty public constructor
     }
 
 
     // TODO: Rename and change types and number of parameters
-    public static BaperFragment newInstance(String param1, String param2) {
-        BaperFragment fragment = new BaperFragment();
+    public static KategoriFragment newInstance(String param1, String param2) {
+        KategoriFragment fragment = new KategoriFragment();
         Bundle args = new Bundle();
 
         fragment.setArguments(args);
@@ -83,15 +93,14 @@ public class BaperFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_baper, container, false);
+        view = inflater.inflate(R.layout.fragment_kategori, container, false);
         Baper_art = view.findViewById(R.id.rc_art);
-        sh_art = view.findViewById(R.id.sh_art);
-        kosong = view.findViewById(R.id.kosong);
-        ly_utama = view.findViewById(R.id.ly_utama);
-        ly_button = view.findViewById(R.id.ly_buton);
-        cardNext = view.findViewById(R.id.card_next);
-        cardPrev= view.findViewById(R.id.card_prev);
-        scrollView = view.findViewById(R.id.mscroll);
+        pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Memuat data ...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+        dialogShow=1;
         islamijudulList= new ArrayList<>();
         islamigambarList= new ArrayList<String>();
         islamipenerbitList = new ArrayList<>();
@@ -101,12 +110,71 @@ public class BaperFragment extends Fragment {
         islamiDesList = new ArrayList<>();
         islamifavList = new ArrayList<Integer>();
         baperDataList= new ArrayList<BaperModel>();
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Memuat data ...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-        dialogShow=1;
+        sh_art = view.findViewById(R.id.sh_art);
+        baper = view.findViewById(R.id.baper);
+        islami= view.findViewById(R.id.islami);
+        lucu= view.findViewById(R.id.lucu);
+        meme= view.findViewById(R.id.meme);
+        motivasi= view.findViewById(R.id.motivasi);
+        remaja= view.findViewById(R.id.remaja);
+        romantis= view.findViewById(R.id.romantis);
+        kosong = view.findViewById(R.id.kosong);
+        ly_utama = view.findViewById(R.id.ly_utama);
+        ly_button = view.findViewById(R.id.ly_buton);
+        cardNext = view.findViewById(R.id.card_next);
+        cardPrev= view.findViewById(R.id.card_prev);
+        scrollView = view.findViewById(R.id.mscroll);
+        menampilkan = view.findViewById(R.id.menampilkan);
+        url = "https://jagokata.com/kata-bijak/kata-ilmuwan.html";
+        baper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(baper, "Menampilkan Kategori Baper",
+                        "https://www.status.co.id/aneka/category/baper/" );
+            }
+        });
+        islami.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(islami, "Menampilkan Kategori Islami",
+                        "https://www.status.co.id/aneka/category/islami/");
+            }
+        });
+        lucu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(lucu, "Menampilkan Kategori Lucu",
+                        "https://www.status.co.id/aneka/category/lucu/");
+            }
+        });
+        meme.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(meme,"Menampilkan Kategori Meme",
+                        "https://www.status.co.id/aneka/category/meme-comic/");
+            }
+        });
+        motivasi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(motivasi, "Menampilkan Kategori Motivasi",
+                        "https://www.status.co.id/aneka/category/motivasi/");
+            }
+        });
+        remaja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(remaja,"Menampilkan Kategori Remaja",
+                        "https://www.status.co.id/aneka/category/remaja/");
+            }
+        });
+        romantis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(romantis,"Menampilkan Kategori Romantis",
+                        "https://www.status.co.id/aneka/category/romantis/");
+            }
+        });
         BaperCek();
         cardNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,22 +209,53 @@ public class BaperFragment extends Fragment {
 
         return view;
     }
-
     private void BaperCek(){
         baperDataList= new ArrayList<BaperModel>();
         if(baperDataList.isEmpty()){
-            new Baper().execute();
+            kategoriKlik(baper, "Menampilkan Kategori Baper",
+                    "https://www.status.co.id/aneka/category/baper/" );
         }else{
             //baperDataList.clear();
-            new Baper().execute();
+            kategoriKlik(baper, "Menampilkan Kategori Baper",
+                    "https://www.status.co.id/aneka/category/baper/" );
         }
         sh_art.startShimmerAnimation();
+    }
+    public void kategoriKlik(final LinearLayout cardView, final String Kategori,
+                             final String urlKategori){
+        url=urlKategori;
+        float alpha = (float) 0.5;
+        baper.setAlpha(alpha);
+        islami.setAlpha(alpha);
+        lucu.setAlpha(alpha);
+        meme.setAlpha(alpha);
+        motivasi.setAlpha(alpha);
+        remaja.setAlpha(alpha);
+        romantis.setAlpha(alpha);
+        cardView.setAlpha(1);
+        menampilkan.setText(Kategori);
+        pDialog.show();
+        dialogShow=1;
+        islamijudulList= new ArrayList<>();
+        islamigambarList= new ArrayList<String>();
+        islamipenerbitList = new ArrayList<>();
+        islamiwaktuList = new ArrayList<>();
+        islamiurlList = new ArrayList<>();
+        islamikategoriList = new ArrayList<>();
+        islamiDesList = new ArrayList<>();
+        islamifavList = new ArrayList<Integer>();
+        baperDataList= new ArrayList<BaperModel>();
+        if (Kategori.equals("Menampilkan Kategori Meme")){
+            new Baper().execute();
+            Log.d(TAG, "kategoriKlik: Meme");
+        }else{
+            new Baper().execute();
+        }
     }
     private class Baper extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             // NO CHANGES TO UI TO BE DONE HERE
-
             mDataAdapter = new BaperAdapter( getActivity(), islamijudulList,
                     islamikategoriList,
                     islamigambarList, islamiurlList,islamipenerbitList
@@ -266,7 +365,10 @@ public class BaperFragment extends Fragment {
                 //rc_art.setAdapter(mDataAdapter);
                 sh_art.stopShimmerAnimation();
                 sh_art.setVisibility(View.GONE);
+                kosong.setVisibility(View.GONE);
+                Baper_art.setVisibility(View.VISIBLE);
             }else{
+                Baper_art.setVisibility(View.GONE);
                 ly_button.setVisibility(View.GONE);
                 kosong.setVisibility(View.VISIBLE);
                 sh_art.stopShimmerAnimation();

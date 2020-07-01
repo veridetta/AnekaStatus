@@ -351,6 +351,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/admob_banner_id">
+        ads:adUnitId="@string/banner_home_footer">
     </com.google.android.gms.ads.AdView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
