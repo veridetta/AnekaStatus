@@ -64,6 +64,8 @@ public class CariActivity extends AppCompatActivity {
         Intent intent = getIntent();
         urlnya = intent.getStringExtra("url");
         txtJudul =  intent.getStringExtra("judul");
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         rc_cari = findViewById(R.id.rc_cari);
         sh_cari = findViewById(R.id.shimmer_cari);
         jdul = findViewById(R.id.cari_judul);

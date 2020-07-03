@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">Aneka Status</string>
-
+    <string name="admob_app_id">ca-app-pub-5923406750110132~5364389978</string>
+    <string name="banner_home_footer">ca-app-pub-5923406750110132/6952674240</string>
+    <string name="native_adds">ca-app-pub-5923406750110132/8242593233</string>
     <!--admob test
+    <string name="native_adds">ca-app-pub3940256099942544/2247696110</string>
+
     <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="banner_home_footer">ca-app-pub-3940256099942544/6300978111</string>
     -->

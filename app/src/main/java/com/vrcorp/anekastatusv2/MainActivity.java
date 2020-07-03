@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
     String TAG = "Tag";
     Toolbar toolbar;
     ActionBar actionBar;
+    AdRequest adRequest;
     NestedScrollView scroll;
     private AdView mAdView;
     private static int CODE_WRITE_SETTINGS_PERMISSION;
@@ -51,19 +52,23 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         //scroll = findViewById(R.id.scRoll);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         //tabLayout = findViewById(R.id.tabLayout);
         isWriteStoragePermissionGranted();
         isReadStoragePermissionGranted();
         if(isReadStoragePermissionGranted() && isWriteStoragePermissionGranted()){
             loadFragment(new BaperFragment());
         }
-        /*
+
         mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                // Check the LogCat to get your test device ID
-                //.addTestDevice("725F7196D12AFC68048ED82BD5C6F3A8")
-                .build();
+             adRequest = new AdRequest.Builder()
+                    //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                    // Check the LogCat to get your test device ID
+                    //.addTestDevice("725F7196D12AFC68048ED82BD5C6F3A8")
+                    .build();
+
+
         mAdView.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
@@ -94,7 +99,7 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
         //actionBar.setTitle("");
         //tabLayout.setupWithViewPager(viewpager);
 
-         */
+
     }
     private void loadFragment(Fragment fragment) {
         // load fragment
@@ -135,25 +140,25 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
     };
     @Override
     public void onPause() {
-        //if (mAdView != null) {
-          //  mAdView.pause();
-        //}
+        if (mAdView != null) {
+           mAdView.pause();
+        }
         super.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-       // if (mAdView != null) {
-         //   mAdView.resume();
-        //}
+        if (mAdView != null) {
+            mAdView.resume();
+        }
     }
 
     @Override
     public void onDestroy() {
-        //if (mAdView != null) {
-          //  mAdView.destroy();
-        //}
+        if (mAdView != null) {
+           mAdView.destroy();
+        }
         super.onDestroy();
     }
     public  boolean isReadStoragePermissionGranted() {

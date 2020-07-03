@@ -50,7 +50,7 @@ public class KategoriFragment extends Fragment {
     private MemeAdapter memeAdapter;
     private CardView cardNext, cardPrev;
     private String url="https://www.status.co.id/aneka/category/baper/";
-    LinearLayout baper, islami, lucu, meme, motivasi, remaja,romantis;
+    LinearLayout baper, islami, lucu, meme, motivasi, remaja,romantis, life, love;
     private ArrayList<String> islamijudulList;
     private ArrayList<String> islamigambarList;
     private ArrayList<String> islamipenerbitList;
@@ -115,6 +115,8 @@ public class KategoriFragment extends Fragment {
         motivasi= view.findViewById(R.id.motivasi);
         remaja= view.findViewById(R.id.remaja);
         romantis= view.findViewById(R.id.romantis);
+        life= view.findViewById(R.id.life);
+        love= view.findViewById(R.id.love);
         kosong = view.findViewById(R.id.kosong);
         ly_utama = view.findViewById(R.id.ly_utama);
         ly_button = view.findViewById(R.id.ly_buton);
@@ -170,6 +172,20 @@ public class KategoriFragment extends Fragment {
             public void onClick(View view) {
                 kategoriKlik(romantis,"Menampilkan Kategori Romantis",
                         "https://www.status.co.id/aneka/category/romantis/");
+            }
+        });
+        life.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(life,"Menampilkan Kategori Kehidupan",
+                        "https://www.status.co.id/aneka/category/kehidupan/");
+            }
+        });
+        love.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                kategoriKlik(love,"Menampilkan Kategori Love",
+                        "https://www.status.co.id/aneka/category/love/");
             }
         });
         BaperCek();

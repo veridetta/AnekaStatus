@@ -125,9 +125,10 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
         int tFav;
         ImageView gArtikel, gFav, gIsi;
         CardView cArtikel;
-        LinearLayout btnShare, btnLike, btnSave;
+        LinearLayout btnShare, btnLike, btnSave,bg;
         public MyViewHolder(View view) {
             super(view);
+            this.bg = view.findViewById(R.id.bg_img);
             tJudul = view.findViewById(R.id.art_judul);
             tDes= view.findViewById(R.id.art_des);
             tWaktu= view.findViewById(R.id.art_tanggal);
@@ -183,9 +184,26 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
             }
         });
         if(islamikategoriList.get(position).equals("")){
-            holder.btnSave.setVisibility(View.GONE);
+            //holder.btnSave.setVisibility(View.GONE);
+            holder.btnSave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Date d = new Date();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HH_mm_ss");
+                    final String currentTimeStamp = dateFormat.format(new Date());
+                    LinearLayout ly = holder.bg;
+                    ly.setDrawingCacheEnabled(true);
+                    ly.buildDrawingCache(true);
+                    Bitmap saveBm = Bitmap.createBitmap(ly.getDrawingCache());
+                    ly.setDrawingCacheEnabled(false);
+                    String bitmapPath = MediaStore.Images.Media.insertImage(ly.getContext().getContentResolver(),
+                            saveBm,islamijudulList.get(position), "Sumber Aplikasi Aneka Status");
+                    Toast.makeText(context,"Gambar berhasil tersimpan di galeri",Toast.LENGTH_LONG).show();
+                }
+
+            });
         }else{
-            holder.btnSave.setVisibility(View.VISIBLE);
+            //holder.btnSave.setVisibility(View.VISIBLE);
             Glide.with(holder.gIsi.getContext())
                     .load(Uri.parse(islamikategoriList.get(position)))
                     .apply(RequestOptions.centerCropTransform())
@@ -196,7 +214,24 @@ public class IslamiAdapter extends RecyclerView.Adapter<IslamiAdapter.MyViewHold
                         }
                     });
 
+            holder.btnSave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Date d = new Date();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HH_mm_ss");
+                    final String currentTimeStamp = dateFormat.format(new Date());
+                    Glide.with(context)
+                            .asBitmap()
+                            .load(Uri.parse(islamikategoriList.get(position)))
+                            .into(new SimpleTarget<Bitmap>(100,100) {
+                                @Override
+                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                    saveImage(resource,"aneka-status"+currentTimeStamp);
+                                }
+                            });
+                }
 
+            });
         }
         holder.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override

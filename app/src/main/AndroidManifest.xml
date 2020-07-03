@@ -15,10 +15,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <!--
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-592340675­0110132~5364389978"/> -->
+            android:value="@string/admob_app_id"/>
         <activity android:name="com.vrcorp.anekastatusv2.CariActivity"></activity>
         <activity android:name="com.vrcorp.anekastatusv2.AboutActivity" />
         <activity android:name="com.vrcorp.anekastatusv2.FavActivity" />

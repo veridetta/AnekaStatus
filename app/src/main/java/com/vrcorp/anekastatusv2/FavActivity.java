@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,7 +42,8 @@ public class FavActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fav);
-
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         rc_fav = findViewById(R.id.rc_fav);
         no_result = findViewById(R.id.no_result);
         favJudul = findViewById(R.id.fav_judul);

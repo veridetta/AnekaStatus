@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -39,8 +40,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.NativeExpressAdView;
+import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.vrcorp.anekastatusv2.adapter.CommentAdapter;
 import com.vrcorp.anekastatusv2.app.AppController;
 import com.vrcorp.anekastatusv2.db.DBHelper;
@@ -75,6 +80,8 @@ public class DetailActivity extends AppCompatActivity {
     DBHelper helper;
     Boolean stataus;
     RecyclerView rc_comment;
+    String LOG_TAG = "Contoh";
+    NativeExpressAdView mAdview;
     ProgressDialog pDialog;
     String urlnya, Nama, gambara, gambarBesar="", urlPosting, waktu, penerbit, isi, comment_name, comment_isi="", comment_waktu, comment_gambar;
     int success=0, favoritStatus=0;
@@ -88,6 +95,8 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         desKategori = findViewById(R.id.des_kategori);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         cFav = findViewById(R.id.des_fav);
         cShare = findViewById(R.id.des_share);
         cBack = findViewById(R.id.des_back);
@@ -108,6 +117,20 @@ public class DetailActivity extends AppCompatActivity {
         helper = new DBHelper(this);
         Intent intent = getIntent();
         SharedPreferences sharedPreferences1 = getSharedPreferences("anekaStatus",MODE_PRIVATE);
+        mAdview = findViewById(R.id.ads_nativ);
+        mAdview.loadAd(new AdRequest.Builder().build());
+        mAdview.setAdListener(new AdListener(){
+            @Override
+            public void onAdFailedToLoad(int i){
+                super.onAdFailedToLoad(i);
+                Toast.makeText(getApplicationContext(), "Error code"+i,Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onAdLoaded(){
+                super.onAdLoaded();
+
+            }
+        });
         stataus=sharedPreferences1.getBoolean("status",false);
         input_com_isi.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

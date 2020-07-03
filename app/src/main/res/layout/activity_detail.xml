@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".DetailActivity">
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/_40sdp">
                 <LinearLayout
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:id="@+id/des_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -140,6 +142,15 @@
                                     android:layout_marginTop="@dimen/_4sdp"
                                     android:background="@color/orange_400"/>
 
+                                <com.google.android.gms.ads.NativeExpressAdView
+                                    android:id="@+id/ads_nativ"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    xmlns:ads="http://schemas.android.com/apk/res-auto"
+                                    ads:adSize="FULL_WIDTHx80"
+                                    ads:adUnitId="@string/native_adds">
+
+                                </com.google.android.gms.ads.NativeExpressAdView>
                                 <androidx.recyclerview.widget.RecyclerView
                                     android:id="@+id/rc_comment"
                                     android:layout_width="match_parent"
@@ -278,6 +289,7 @@
                     </LinearLayout>
                 </LinearLayout>
                 <io.supercharge.shimmerlayout.ShimmerLayout
+                    android:visibility="gone"
                     android:id="@+id/sh_des"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
