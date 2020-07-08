@@ -40,12 +40,17 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.ads.nativetemplates.TemplateView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.NativeExpressAdView;
 import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.vrcorp.anekastatusv2.adapter.CommentAdapter;
 import com.vrcorp.anekastatusv2.app.AppController;
 import com.vrcorp.anekastatusv2.db.DBHelper;
@@ -117,20 +122,23 @@ public class DetailActivity extends AppCompatActivity {
         helper = new DBHelper(this);
         Intent intent = getIntent();
         SharedPreferences sharedPreferences1 = getSharedPreferences("anekaStatus",MODE_PRIVATE);
-        mAdview = findViewById(R.id.ads_nativ);
-        mAdview.loadAd(new AdRequest.Builder().build());
-        mAdview.setAdListener(new AdListener(){
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
-            public void onAdFailedToLoad(int i){
-                super.onAdFailedToLoad(i);
-                Toast.makeText(getApplicationContext(), "Error code"+i,Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onAdLoaded(){
-                super.onAdLoaded();
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
 
             }
         });
+        AdLoader.Builder builder = new AdLoader.Builder(this, getString(R.string.native_adds));
+        builder.forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+            @Override
+            public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+                TemplateView templateView = findViewById(R.id.my_template);
+                templateView.setNativeAd(unifiedNativeAd);
+            }
+        });
+        AdLoader adLoader = builder.build();
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adLoader.loadAd(adRequest);
         stataus=sharedPreferences1.getBoolean("status",false);
         input_com_isi.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

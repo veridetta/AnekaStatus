@@ -142,15 +142,12 @@
                                     android:layout_marginTop="@dimen/_4sdp"
                                     android:background="@color/orange_400"/>
 
-                                <com.google.android.gms.ads.NativeExpressAdView
-                                    android:id="@+id/ads_nativ"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    xmlns:ads="http://schemas.android.com/apk/res-auto"
-                                    ads:adSize="FULL_WIDTHx80"
-                                    ads:adUnitId="@string/native_adds">
-
-                                </com.google.android.gms.ads.NativeExpressAdView>
+                                <!--  This is your template view -->
+                                <com.google.android.ads.nativetemplates.TemplateView
+                                    android:id="@+id/my_template"
+                                    app:gnt_template_type="@layout/gnt_small_template_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent" />
                                 <androidx.recyclerview.widget.RecyclerView
                                     android:id="@+id/rc_comment"
                                     android:layout_width="match_parent"
@@ -349,7 +346,7 @@
                         android:layout_margin="@dimen/_8sdp"
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
-                        android:background="@drawable/download"/>
+                        android:background="@drawable/back"/>
                 </androidx.cardview.widget.CardView>
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
