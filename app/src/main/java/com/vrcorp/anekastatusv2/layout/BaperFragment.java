@@ -41,7 +41,7 @@ public class BaperFragment extends Fragment {
     private List<BaperModel> baperDataList;
     private BaperAdapter mDataAdapter;
     private CardView cardNext, cardPrev;
-    private String url="https://www.status.co.id/aneka/category/baper/";
+    private String url="http://www.status.co.id/aneka/category/aneka-status/";
     private ArrayList<String> islamijudulList;
     private ArrayList<String> islamigambarList;
     private ArrayList<String> islamipenerbitList;

@@ -63,11 +63,7 @@ public class MainActivity extends AppCompatActivity {private ArtikelAdapter adap
 
         mAdView = (AdView) findViewById(R.id.adView);
              adRequest = new AdRequest.Builder()
-                    //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                    // Check the LogCat to get your test device ID
-                    //.addTestDevice("725F7196D12AFC68048ED82BD5C6F3A8")
                     .build();
-
 
         mAdView.setAdListener(new AdListener() {
             @Override
