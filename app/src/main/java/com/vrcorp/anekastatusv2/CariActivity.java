@@ -122,12 +122,7 @@ public class CariActivity extends AppCompatActivity {
                 if(next.equals("next")){
                     System.out.println("url next "+url);
                     new CardGet().execute();
-                    pDialog = new ProgressDialog(CariActivity.this);
-                    pDialog.setMessage("Memuat data ...");
-                    pDialog.setIndeterminate(false);
-                    pDialog.setCancelable(false);
-                    pDialog.show();
-                    dialogShow=1;
+
                 }
             }
         });
@@ -138,12 +133,7 @@ public class CariActivity extends AppCompatActivity {
                 if(prev.equals("previous")){
                     System.out.println("url prev "+url);
                     new CardGet().execute();
-                    pDialog = new ProgressDialog(CariActivity.this);
-                    pDialog.setMessage("Memuat data ...");
-                    pDialog.setIndeterminate(false);
-                    pDialog.setCancelable(false);
-                    pDialog.show();
-                    dialogShow=1;
+
                 }
             }
         });
@@ -258,10 +248,7 @@ public class CariActivity extends AppCompatActivity {
                 rc_cari.setVisibility(View.GONE);
                 no_result.setVisibility(View.VISIBLE);
             }
-            if(dialogShow>0){
-                pDialog.dismiss();
-                dialogShow=0;
-            }
+
             System.out.println("Mentok"+islamijudulList);
             //--------------------------
             //-------------------------

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,12 +140,7 @@ public class CariFragment extends Fragment {
                 if(next.equals("next")){
                     System.out.println("url next "+url);
                     new CardGet().execute();
-                    pDialog = new ProgressDialog(getActivity());
-                    pDialog.setMessage("Memuat data ...");
-                    pDialog.setIndeterminate(false);
-                    pDialog.setCancelable(false);
-                    pDialog.show();
-                    dialogShow=1;
+
                 }
             }
         });
@@ -155,12 +151,7 @@ public class CariFragment extends Fragment {
                 if(prev.equals("previous")){
                     System.out.println("url prev "+url);
                     new CardGet().execute();
-                    pDialog = new ProgressDialog(getActivity());
-                    pDialog.setMessage("Memuat data ...");
-                    pDialog.setIndeterminate(false);
-                    pDialog.setCancelable(false);
-                    pDialog.show();
-                    dialogShow=1;
+
                 }
             }
         });
@@ -227,6 +218,7 @@ public class CariFragment extends Fragment {
                 islamiDesList.add(des);
                 islamifavList.add(1);
                 mDataAdapter.notifyDataSetChanged();
+                Log.d("Hasil cari", "doInBackground: "+BaperElementSize);
             }
             Elements eNext = mBlogPagination.select("nav[id=nav-index] ul[class=pager]");
             //eList = eNext.select("li");
@@ -266,6 +258,7 @@ public class CariFragment extends Fragment {
                 rc_cari.setLayoutManager(mLayoutManager);
                 rc_cari.setAdapter(mDataAdapter);
                 //rc_art.setAdapter(mDataAdapter);
+                rc_cari.setVisibility(View.VISIBLE);
                 no_result.setVisibility(View.GONE);
                 sh_cari.stopShimmerAnimation();
                 sh_cari.setVisibility(View.GONE);
@@ -277,10 +270,7 @@ public class CariFragment extends Fragment {
                 rc_cari.setVisibility(View.GONE);
                 no_result.setVisibility(View.VISIBLE);
             }
-            if(dialogShow>0){
-                pDialog.dismiss();
-                dialogShow=0;
-            }
+
             System.out.println("Mentok"+islamijudulList);
             //--------------------------
             //-------------------------

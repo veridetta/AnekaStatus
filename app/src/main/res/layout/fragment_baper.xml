@@ -35,8 +35,8 @@
             </LinearLayout>
             <io.supercharge.shimmerlayout.ShimmerLayout
                 android:id="@+id/sh_art"
-                android:visibility="gone"
-                android:layout_marginTop="@dimen/_150sdp"
+                android:visibility="visible"
+                android:layout_marginTop="@dimen/_6sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <LinearLayout

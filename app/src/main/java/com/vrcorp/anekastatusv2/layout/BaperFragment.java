@@ -98,12 +98,6 @@ public class BaperFragment extends Fragment {
         islamiDesList = new ArrayList<>();
         islamifavList = new ArrayList<Integer>();
         baperDataList= new ArrayList<BaperModel>();
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Memuat data ...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-        dialogShow=1;
         BaperCek();
         cardNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,12 +105,7 @@ public class BaperFragment extends Fragment {
                 url = nextUrl;
                 if(next.equals("next")){
                     new Baper().execute();
-                    pDialog = new ProgressDialog(getActivity());
-                    pDialog.setMessage("Memuat data ...");
-                    pDialog.setIndeterminate(false);
-                    pDialog.setCancelable(false);
-                    pDialog.show();
-                    dialogShow=1;
+
                 }
             }
         });
@@ -126,12 +115,7 @@ public class BaperFragment extends Fragment {
                 url = prevUrl;
                 if(prev.equals("previous")){
                     new Baper().execute();
-                    pDialog = new ProgressDialog(getActivity());
-                    pDialog.setMessage("Memuat data ...");
-                    pDialog.setIndeterminate(false);
-                    pDialog.setCancelable(false);
-                    pDialog.show();
-                    dialogShow=1;
+
                 }
             }
         });
@@ -269,10 +253,7 @@ public class BaperFragment extends Fragment {
                 sh_art.stopShimmerAnimation();
                 sh_art.setVisibility(View.GONE);
             }
-            if(dialogShow>0){
-                pDialog.dismiss();
-                dialogShow=0;
-            }
+
             //--------------------------
             //-------------------------
             //dialog.dismiss();

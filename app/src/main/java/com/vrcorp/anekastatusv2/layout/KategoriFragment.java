@@ -92,12 +92,7 @@ public class KategoriFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_kategori, container, false);
         Baper_art = view.findViewById(R.id.rc_art);
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Memuat data ...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-        dialogShow=1;
+
         islamijudulList= new ArrayList<>();
         islamigambarList= new ArrayList<String>();
         islamipenerbitList = new ArrayList<>();
@@ -195,12 +190,7 @@ public class KategoriFragment extends Fragment {
                 url = nextUrl;
                 if(next.equals("next")){
                     new Baper().execute();
-                    pDialog = new ProgressDialog(getActivity());
-                    pDialog.setMessage("Memuat data ...");
-                    pDialog.setIndeterminate(false);
-                    pDialog.setCancelable(false);
-                    pDialog.show();
-                    dialogShow=1;
+
                 }
             }
         });
@@ -210,12 +200,7 @@ public class KategoriFragment extends Fragment {
                 url = prevUrl;
                 if(prev.equals("previous")){
                     new Baper().execute();
-                    pDialog = new ProgressDialog(getActivity());
-                    pDialog.setMessage("Memuat data ...");
-                    pDialog.setIndeterminate(false);
-                    pDialog.setCancelable(false);
-                    pDialog.show();
-                    dialogShow=1;
+
                 }
             }
         });
@@ -247,8 +232,7 @@ public class KategoriFragment extends Fragment {
         romantis.setAlpha(alpha);
         cardView.setAlpha(1);
         menampilkan.setText(Kategori);
-        pDialog.show();
-        dialogShow=1;
+        sh_art.startShimmerAnimation();
         islamijudulList= new ArrayList<>();
         islamigambarList= new ArrayList<String>();
         islamipenerbitList = new ArrayList<>();
@@ -387,10 +371,7 @@ public class KategoriFragment extends Fragment {
                 sh_art.stopShimmerAnimation();
                 sh_art.setVisibility(View.GONE);
             }
-            if(dialogShow>0){
-                pDialog.dismiss();
-                dialogShow=0;
-            }
+
             //--------------------------
             //-------------------------
             //dialog.dismiss();
